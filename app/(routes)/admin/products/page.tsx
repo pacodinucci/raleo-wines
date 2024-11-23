@@ -21,6 +21,7 @@ const ProductsPage = () => {
   const productsFormat: ProductsColumn[] = products.map((item) => ({
     id: item.id || "",
     title: item.title,
+    winery: item.winery,
     type: item.type,
     year: item.year,
     price: item.price,

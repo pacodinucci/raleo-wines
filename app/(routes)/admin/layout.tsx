@@ -41,10 +41,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </div>
       <div className="flex-1">
         <Navbar />
-        <main className="md:pl-10 md:pr-8 pt-10 relative">
-          {/* <Toaster richColors /> */}
-          {children}
-        </main>
+        <main className="md:px-4 pt-10 relative">{children}</main>
       </div>
     </div>
   );
