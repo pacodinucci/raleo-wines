@@ -30,6 +30,8 @@ const Navbar = () => {
   const session = useSession();
   const user = session.data?.user;
 
+  console.log(user);
+
   const handleSignOut = async () => {
     signOut({ callbackUrl: "/auth/login" });
   };
@@ -48,12 +50,15 @@ const Navbar = () => {
       {/* Right Section */}
       <div className="flex gap-x-4 items-center relative px-4">
         <Bell className="text-slate-700" size={20} />
-        {user && user.image && (
+        {user && (
           <Popover>
             <PopoverTrigger className="text-neutral-700">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user.image} />
-                <AvatarFallback>{user.name}</AvatarFallback>
+                <AvatarImage
+                  src={user.image || "/avatar.jpg"}
+                  alt={user.name || "Usuario genérico"}
+                />
+                <AvatarFallback>{user.name?.charAt(0) || "?"}</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
             <PopoverContent>
@@ -61,8 +66,13 @@ const Navbar = () => {
                 <CommandList>
                   <div className="flex items-center py-2">
                     <Avatar className="h-8 w-8 ml-2">
-                      <AvatarImage src={user.image} />
-                      <AvatarFallback>{user.name}</AvatarFallback>
+                      <AvatarImage
+                        src={user.image || "/avatar.jpg"} // Ruta de la imagen genérica
+                        alt={user.name || "Usuario genérico"}
+                      />
+                      <AvatarFallback>
+                        {user.name?.charAt(0) || "?"}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="w-full">
                       <p className="px-2 font-semibold text-sm">{user.name}</p>
@@ -70,7 +80,7 @@ const Navbar = () => {
                         className="px-2 text-xs truncate overflow-hidden whitespace-nowrap"
                         style={{ maxWidth: "150px" }}
                       >
-                        {user.email}
+                        {user.email || "Correo no disponible"}
                       </p>
                     </div>
                   </div>
