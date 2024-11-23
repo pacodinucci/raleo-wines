@@ -19,6 +19,8 @@ import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
 import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
+import { getSession, signIn } from "next-auth/react";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 export const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -33,16 +35,25 @@ export const LoginForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setError("");
     setSuccess("");
 
-    startTransition(() => {
-      login(values).then((data) => {
-        setError(data?.error);
-        setSuccess(data?.success);
-      });
+    const { email, password } = values;
+
+    const result = await signIn("credentials", {
+      redirect: true,
+      email,
+      password,
+      redirectTo: DEFAULT_LOGIN_REDIRECT,
     });
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      setSuccess("Inicio de sesión exitoso");
+      await getSession();
+    }
   };
 
   return (

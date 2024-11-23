@@ -67,7 +67,7 @@ const Navbar = () => {
                   <div className="flex items-center py-2">
                     <Avatar className="h-8 w-8 ml-2">
                       <AvatarImage
-                        src={user.image || "/avatar.jpg"} // Ruta de la imagen genérica
+                        src={user.image || "/avatar.jpg"}
                         alt={user.name || "Usuario genérico"}
                       />
                       <AvatarFallback>
