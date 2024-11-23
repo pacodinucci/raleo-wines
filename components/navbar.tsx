@@ -22,11 +22,15 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import Image from "next/image";
-import { FiUser, FiSettings } from "react-icons/fi";
+import { FiUser, FiSettings, FiMenu } from "react-icons/fi";
 import { PiSignOutBold } from "react-icons/pi";
 import { signOut } from "next-auth/react";
 
-const Navbar = () => {
+interface NavbarProps {
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Navbar = ({ setIsSidebarOpen }: NavbarProps) => {
   const session = useSession();
   const user = session.data?.user;
 
@@ -34,6 +38,10 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     signOut({ callbackUrl: "/auth/login" });
+  };
+
+  const handleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
   };
 
   return (
@@ -104,6 +112,10 @@ const Navbar = () => {
             </PopoverContent>
           </Popover>
         )}
+        <FiMenu
+          className="md:hidden text-neutral-700 text-3xl mt-1 mx-1"
+          onClick={handleSidebar}
+        />
       </div>
     </div>
   );
