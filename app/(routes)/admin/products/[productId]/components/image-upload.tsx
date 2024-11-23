@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { CldUploadButton } from "next-cloudinary";
 import Image from "next/image";
@@ -15,18 +13,19 @@ export const ImageUpload = ({
   onChange,
   disabled,
 }: ImageUploadProps) => {
-  const [isMounted, setIsMounted] = useState(false);
+  // const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // useEffect(() => {
+  //   setIsMounted(true);
+  // }, []);
 
-  if (!isMounted) return null;
+  // if (!isMounted) return null;
 
   return (
     <div className="space-y-4 w-full flex flex-col justify-center items-center">
       <CldUploadButton
-        onUpload={(result: any) => onChange(result.info.secure_url)}
+        onUpload={(result: any) => console.log(result)}
+        onSuccess={(result: any) => onChange(result.info.secure_url)}
         options={{
           maxFiles: 1,
         }}

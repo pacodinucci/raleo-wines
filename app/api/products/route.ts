@@ -21,19 +21,19 @@ export async function POST(req: Request) {
       cellar,
       alcohol,
       ph,
-      user,
+      // user,
       discount,
       price,
       stock,
-      external_reference,
+      // external_reference,
       available,
       boxSize,
       weight,
     } = body;
 
-    if (!user) {
-      return new NextResponse("User not found", { status: 400 });
-    }
+    // if (!user) {
+    //   return new NextResponse("User not found", { status: 400 });
+    // }
 
     if (
       !title ||
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       // !discount ||
       !price ||
       !stock ||
-      !external_reference ||
+      // !external_reference ||
       !available ||
       !boxSize ||
       !weight
@@ -82,11 +82,11 @@ export async function POST(req: Request) {
         discount,
         price,
         stock,
-        external_reference,
+        // external_reference,
         available,
         boxSize,
         weight,
-        userId: user.id,
+        // userId: user.id,
       },
     });
 

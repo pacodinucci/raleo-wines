@@ -8,7 +8,6 @@ import { Product, User } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 
 import {
   Form,
@@ -34,6 +33,7 @@ import { wineTypes, boxes, discounts } from "@/lib/constants";
 
 interface ProductFormProps {
   initialData: Product | null;
+  // user: User | null;
 }
 
 const formSchema = z.object({
@@ -41,7 +41,7 @@ const formSchema = z.object({
     message: "Título es requerido.",
   }),
   winery: z.string().min(1, {
-    message: "Bodega es requerida.",
+    message: "EL nombre de la bodega es requerido.",
   }),
   category: z.string().min(1, {
     message: "Categoría de vino es requerida.",
@@ -88,9 +88,9 @@ const formSchema = z.object({
   stock: z.string().refine((val) => !isNaN(Number(val)), {
     message: "Stock debe ser un número.",
   }),
-  external_reference: z.string().min(5, {
-    message: "External Reference es requerido.",
-  }),
+  // external_reference: z.string().min(5, {
+  //   message: "External Reference es requerido.",
+  // }),
   available: z.boolean().default(true),
   boxSize: z.string(),
 });
@@ -98,9 +98,6 @@ const formSchema = z.object({
 const ProductForm = ({ initialData }: ProductFormProps) => {
   const router = useRouter();
   const params = useParams();
-  const session = useSession();
-
-  const user = session.data?.user;
 
   const defaultValues = initialData
     ? {
@@ -114,6 +111,7 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
         type: "",
         year: "",
         size: "750ml",
+        src: "",
         harvest: "",
         fermentation: "",
         aging: "",
@@ -122,12 +120,11 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
         cellar: "",
         alcohol: "",
         ph: "",
-        src: "",
         discount: "0",
         weight: "",
         price: "",
         stock: "0", // stock como string
-        external_reference: "",
+        // external_reference: "",
         available: true,
         boxSize: "6",
       };
@@ -146,10 +143,10 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
     };
 
     console.log({ transformedData });
-    console.log(user);
+
     try {
       if (!initialData) {
-        await axios.post("/api/products", { ...transformedData, user });
+        await axios.post("/api/products", { ...transformedData });
         toast.success("Producto agregado.");
         router.push("/admin/products");
       } else {

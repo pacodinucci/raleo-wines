@@ -16,6 +16,7 @@ import {
   signika,
 } from "@/lib/fonts";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,7 +31,10 @@ export default function RootLayout({
   return (
     <SessionProvider>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          <Toaster richColors />
+          {children}
+        </body>
       </html>
     </SessionProvider>
   );

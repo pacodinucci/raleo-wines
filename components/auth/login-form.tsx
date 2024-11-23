@@ -96,7 +96,7 @@ export const LoginForm = () => {
           <FormSuccess message={success} />
           <Button
             type="submit"
-            className="w-full bg-[#333652]"
+            className="w-full bg-[#B15147] hover:bg-[#B15147]/80"
             disabled={isPending}
           >
             Iniciar Sesión
