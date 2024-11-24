@@ -66,7 +66,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1">
         <Navbar setIsSidebarOpen={setIsSidebarOpen} />
-        <main className="md:px-4 pt-10 relative">{children}</main>
+        <main className="w-[100vw] md:w-auto px-2 md:px-4 pt-10 relative">
+          {children}
+        </main>
       </div>
     </div>
   );

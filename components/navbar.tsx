@@ -56,7 +56,7 @@ const Navbar = ({ setIsSidebarOpen }: NavbarProps) => {
       </div>
 
       {/* Right Section */}
-      <div className="flex gap-x-4 items-center relative px-4">
+      <div className="flex gap-x-4 items-center relative">
         <Bell className="text-slate-700" size={20} />
         {user && (
           <Popover>
