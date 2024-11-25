@@ -12,6 +12,7 @@ import {
   Lato,
   Poppins,
   Signika,
+  IBM_Plex_Sans,
 } from "next/font/google";
 
 export const inter = Inter({
@@ -77,4 +78,9 @@ export const poppins = Poppins({
 export const signika = Signika({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+});
+
+export const ibm = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
 });

@@ -25,3 +25,26 @@ export interface Product {
   updatedAt: Date;
   createdAt: Date;
 }
+
+export interface ShippingInfo {
+  fullName: string;
+  phone: string;
+  email: string;
+  identification: string;
+  address: string;
+  apart?: string;
+  city: string;
+  zipCode: string;
+  observations?: string;
+  region: string;
+  deliveryAddress: boolean;
+  deliveryAddressLine: string;
+  deliveryPhone: string;
+  deliveryApart: string;
+  deliveryCity: string;
+  deliveryRegion: string;
+  deliveryZipCode: string;
+  deliveryFullName: string;
+  deliveryDays: string[];
+  deliveryTime: string[];
+}

@@ -1,16 +1,15 @@
-"use client";
+import TiendaCarousel from "@/components/carousel";
+import { db } from "@/lib/db";
 
-import { useSession } from "next-auth/react";
-
-export default function Home() {
-  const session = useSession();
-
-  console.log(session);
-
-  console.log();
+export default async function Home() {
+  const products = await db.product.findMany({
+    where: {
+      available: true,
+    },
+  });
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      Halmacén Home Page
+      <TiendaCarousel products={products} />
     </main>
   );
 }
