@@ -48,10 +48,15 @@ const OptionsNavigation = () => {
           </li>
         ))}
       </ul>
-      <div className="relative p-2">
+      <div
+        className="relative p-2"
+        ref={cartIconRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         <PiBagLight className="text-xl cursor-pointer" onClick={toggleCart} />
         {cartItemsSum > 0 && (
-          <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">
+          <span className="absolute top-0 right-0 bg-[#B15147] text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">
             {cartItemsSum}
           </span>
         )}

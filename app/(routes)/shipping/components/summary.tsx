@@ -206,7 +206,7 @@ const Summary = () => {
       </div>
       <div className="flex justify-end pt-8">
         <Button
-          className={`${montserrat.className} bg-amber-800 text-white uppercase hover:bg-amber-800/70 rounded-none`}
+          className={`${montserrat.className} bg-[#B15147] text-white uppercase hover:bg-[#B15147]/70 rounded-none`}
           onClick={handleSubmit(onSubmit)}
         >
           Realizar pedido

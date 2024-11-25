@@ -60,7 +60,7 @@ const TiendaCarousel: React.FC<TiendaCarouselProps> = ({ products }) => {
     <div className="relative group hidden md:block">
       <button
         onClick={handlePrev}
-        className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-amber-800 text-white p-2 z-10 opacity-0 ${
+        className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#B15147] text-white p-2 z-10 opacity-0 ${
           products.length > 4 ? "group-hover:opacity-100" : ""
         } transition-opacity duration-300 ${
           currentIndex === 0 ? "cursor-not-allowed bg-midBrownCustom/30" : ""
@@ -145,7 +145,7 @@ const TiendaCarousel: React.FC<TiendaCarouselProps> = ({ products }) => {
                 </p>
               </div>
               <Button
-                className={`${montserrat.className} rounded-none bg-amber-800 hover:bg-amber-800/80 uppercase tracking-wide`}
+                className={`${montserrat.className} rounded-none bg-[#B15147] hover:bg-[#B15147]/80 uppercase tracking-wide`}
                 onClick={() => handleAddToCart(item)}
               >
                 Agregar al carrito
@@ -156,11 +156,11 @@ const TiendaCarousel: React.FC<TiendaCarouselProps> = ({ products }) => {
       </div>
       <button
         onClick={handleNext}
-        className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-amber-800 text-white p-2 z-10 opacity-0 ${
+        className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#B15147] text-white p-2 z-10 opacity-0 ${
           products.length > 4 ? "group-hover:opacity-100" : ""
         } transition-opacity duration-300 ${
           currentIndex === products.length - 1
-            ? "cursor-not-allowed bg-amber-800/30"
+            ? "cursor-not-allowed bg-[#B15147]/30"
             : ""
         }`}
         disabled={currentIndex === products.length - 1}

@@ -17,7 +17,6 @@ import {
 } from "@/lib/fonts";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
-import TopNavigation from "@/components/top-navigation";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -34,7 +33,6 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <Toaster richColors />
-          <TopNavigation />
           {children}
         </body>
       </html>

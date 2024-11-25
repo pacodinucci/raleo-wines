@@ -9,7 +9,7 @@ const Steps: React.FC = () => {
 
   const getStepStyle = (step: number): string => {
     if (pathname === "/confirmation") {
-      return "bg-amber-800"; // Cambia este color según lo necesites
+      return "bg-[#B15147]"; // Cambia este color según lo necesites
     }
 
     if (step === 1) {
@@ -18,15 +18,15 @@ const Steps: React.FC = () => {
         pathname === "/shipping" ||
         pathname === "/payment"
       ) {
-        return "bg-amber-800";
+        return "bg-[#B15147]";
       }
     } else if (step === 2) {
       if (pathname === "/shipping" || pathname === "/payment") {
-        return "bg-amber-800";
+        return "bg-[#B15147]";
       }
     } else if (step === 3) {
       if (pathname === "/payment") {
-        return "bg-amber-800";
+        return "bg-[#B15147]";
       }
     }
     return "bg-amber-600";
@@ -34,14 +34,14 @@ const Steps: React.FC = () => {
 
   const getConnectorStyle = (step: number): string => {
     if (pathname === "/confirmation") {
-      return "bg-amber-800";
+      return "bg-[#B15147]";
     }
 
     if (pathname === "/shipping" && step === 1) {
-      return "bg-amber-800";
+      return "bg-[#B15147]";
     }
     if (pathname === "/payment" && step === 2) {
-      return "bg-amber-800";
+      return "bg-[#B15147]";
     }
     return "bg-amber-600";
   };
