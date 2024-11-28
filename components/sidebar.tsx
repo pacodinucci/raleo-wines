@@ -27,7 +27,7 @@ export const Sidebar = () => {
     },
     {
       icon: LayoutDashboard,
-      href: "/admin/dashboard",
+      href: "/admin",
       label: "Dashboard",
       pro: false,
     },
@@ -45,7 +45,7 @@ export const Sidebar = () => {
     },
     {
       icon: User,
-      href: "/settings",
+      href: "/admin/customers",
       label: "Clientes",
       pro: false,
     },

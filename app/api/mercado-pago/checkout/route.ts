@@ -79,6 +79,21 @@ export async function POST(
           zipCode: data.zipCode,
         };
 
+    let customer = await db.customer.findFirst({
+      where: { email: data.email },
+    });
+
+    if (!customer) {
+      customer = await db.customer.create({
+        data: {
+          name: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+        },
+      });
+    }
+
     const order = await db.order.create({
       data: {
         name: data.fullName,
@@ -86,6 +101,7 @@ export async function POST(
         email: data.email,
         isPaid: false,
         paymentMethod: "mercado-pago",
+        customerId: customer.id,
         orderItems: {
           create: productIds.map((productId: string) => ({
             product: {

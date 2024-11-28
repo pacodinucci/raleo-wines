@@ -70,7 +70,7 @@ export const CustomerDataModal = () => {
 
   return (
     <Modal
-      title="Suscribirse al Club Vino Rodante"
+      title="Suscribirse al Club de Vino"
       description={
         !showPaymentCardForm
           ? "Complete el formulario con sus datos"

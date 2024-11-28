@@ -104,6 +104,8 @@ model Order {
   deliveryTime    String[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  Customer        Customer?   @relation(fields: [customerId], references: [id])
+  customerId      String?
 }
 
 model OrderItem {
@@ -115,4 +117,16 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+}
+
+model Customer {
+  id      String  @id @default(uuid())
+  phone   String  @default("")
+  email   String  @default("")
+  address String  @default("")
+  name    String  @default("")
+  orders  Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
