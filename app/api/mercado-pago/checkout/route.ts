@@ -132,10 +132,10 @@ export async function POST(
       },
       auto_return: "approved",
       back_urls: {
-        success: `http://localhost:3000?success=1`,
-        failure: `http://localhost:3000?canceled=1`,
+        success: `https://halmacen-five.vercel.app?success=1`,
+        failure: `https://halmacen-five.vercel.app?canceled=1`,
       },
-      notification_url: `https://aleste.vercel.app/api/notify`,
+      notification_url: `https://halmacen-five.vercel.app/api/mercado-pago/notify`,
     };
     const response = await mercadopago.preferences.create(preference);
 

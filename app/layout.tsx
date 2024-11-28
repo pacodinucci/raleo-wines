@@ -17,6 +17,7 @@ import {
 } from "@/lib/fonts";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
+import { ModalProvider } from "@/providers/modal-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -32,6 +33,7 @@ export default function RootLayout({
     <SessionProvider>
       <html lang="en">
         <body className={inter.className}>
+          <ModalProvider />
           <Toaster richColors />
           {children}
         </body>
