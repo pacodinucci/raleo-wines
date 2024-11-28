@@ -21,7 +21,7 @@ const TextReveal = () => {
   gsap.registerPlugin(ScrollTrigger);
 
   const text =
-    "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eum molestiae deleniti doloribus ratione a! Dignissimos deleniti quo omnis quibusdam facilis aliquam veritatis saepe sint ipsum.";
+    "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eum molestiae deleniti doloribus ratione a! Dignissimos deleniti quo omnis.";
 
   useEffect(() => {
     const reveal = gsap.to(lettersRef.current, {

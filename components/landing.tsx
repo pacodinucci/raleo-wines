@@ -35,8 +35,8 @@ const Landing = () => {
 };
 
 const Section1 = ({ scrollYProgress }: any) => {
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [0, -5]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1]);
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, 0]);
   return (
     <motion.div
       style={{ scale, rotate }}
@@ -60,7 +60,7 @@ const Section1 = ({ scrollYProgress }: any) => {
 };
 
 const Section2 = ({ scrollYProgress }: any) => {
-  const scale = useTransform(scrollYProgress, [0, 1], [0.8, 1]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.4, 1]);
   const rotate = useTransform(scrollYProgress, [0, 1], [-5, 0]);
   return (
     <motion.div style={{ scale, rotate }} className="relative h-[100vh]">
