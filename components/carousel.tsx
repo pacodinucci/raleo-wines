@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Product } from "@prisma/client";
 import useCartStore from "@/hooks/use-cart-store";
 import { useRouter } from "next/navigation";
+import useProductStore from "@/hooks/use-product-store";
 
 export interface TiendaCarouselProps {
-  products: Product[];
+  // products: Product[];
 }
 
-const TiendaCarousel: React.FC<TiendaCarouselProps> = ({ products }) => {
+const TiendaCarousel: React.FC<TiendaCarouselProps> = () => {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselRef = useRef(null);
@@ -22,7 +23,13 @@ const TiendaCarousel: React.FC<TiendaCarouselProps> = ({ products }) => {
   const addToCart = useCartStore((state) => state.addToCart);
   const cart = useCartStore((state) => state.cart);
 
-  console.log(cart);
+  const { products, fetchProducts } = useProductStore();
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  // console.log(cart);
 
   const handleNext = () => {
     if (carouselRef.current) {

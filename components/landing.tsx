@@ -7,6 +7,7 @@ import pic2 from "../public/redwine.jpg";
 import Lenis from "lenis";
 import { useScroll, useTransform, motion } from "framer-motion";
 import { signika } from "@/lib/fonts";
+import PaintEffect from "./paint-effect";
 
 const Landing = () => {
   const container = useRef<HTMLDivElement | null>(null);
@@ -29,6 +30,7 @@ const Landing = () => {
   return (
     <div ref={container} className="relative ">
       <Section1 scrollYProgress={scrollYProgress} />
+      {/* <PaintEffect /> */}
       <Section2 scrollYProgress={scrollYProgress} />
     </div>
   );

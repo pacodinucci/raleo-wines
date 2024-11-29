@@ -7,7 +7,11 @@ import { PiBagLight } from "react-icons/pi";
 import useCartStore from "@/hooks/use-cart-store";
 import SemiCart from "./semi-cart";
 
-const OptionsNavigation = () => {
+interface OptionsNavigationProps {
+  subscriptionInView: boolean;
+}
+
+const OptionsNavigation = ({ subscriptionInView }: OptionsNavigationProps) => {
   const semiCartRef = useRef<HTMLDivElement>(null);
   const cartIconRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +46,9 @@ const OptionsNavigation = () => {
         {optionsNavigationOptions.map((option, index) => (
           <li
             key={index}
-            className={`${montserrat.className} text-neutral-700 uppercase text-sm tracking-wide cursor-pointer`}
+            className={`${montserrat.className} ${
+              subscriptionInView ? "text-white" : "text-neutral-700"
+            } uppercase text-sm tracking-wide cursor-pointer transition-colors duration-500`}
           >
             {option}
           </li>

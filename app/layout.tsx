@@ -18,6 +18,7 @@ import {
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
 import { ModalProvider } from "@/providers/modal-provider";
+import { SubscriptionProvider } from "@/context/subscription-context";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -32,11 +33,13 @@ export default function RootLayout({
   return (
     <SessionProvider>
       <html lang="en">
-        <body className={inter.className}>
-          <ModalProvider />
-          <Toaster richColors />
-          {children}
-        </body>
+        <SubscriptionProvider>
+          <body className={inter.className}>
+            <ModalProvider />
+            <Toaster richColors />
+            {children}
+          </body>
+        </SubscriptionProvider>
       </html>
     </SessionProvider>
   );

@@ -6,8 +6,10 @@ import OptionsNavigation from "./options-navigation";
 import { signika } from "@/lib/fonts";
 import { useScroll, motion, useTransform, useInView } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useSubscription } from "@/context/subscription-context";
 
 const TopNavigation = () => {
+  const { subscriptionInView } = useSubscription();
   const { scrollY } = useScroll();
   const pathname = usePathname();
 
@@ -22,17 +24,23 @@ const TopNavigation = () => {
     pathname === "/" ? [-50, 0] : [0, 0]
   );
 
+  const backgroundColor = subscriptionInView
+    ? "rgba(255, 255, 255, 0)"
+    : "rgba(255, 255, 255, 0.5)";
+
   return (
     <motion.div
       className="fixed top-0 left-0 grid grid-cols-[40%_20%_40%] items-center px-6 py-4 z-50 w-full bg-white/50 backdrop-blur-md"
       style={{
         opacity,
         transform: translateY,
+        backgroundColor,
+        transition: "background-color 0.5s ease",
       }}
     >
       {/* Left column */}
       <div className="flex justify-start">
-        <MainNavigation />
+        <MainNavigation subscriptionInView={subscriptionInView} />
       </div>
 
       {/* Center column */}
@@ -46,7 +54,7 @@ const TopNavigation = () => {
 
       {/* Right column */}
       <div className="flex justify-end">
-        <OptionsNavigation />
+        <OptionsNavigation subscriptionInView={subscriptionInView} />
       </div>
     </motion.div>
   );
