@@ -29,7 +29,7 @@ const Steps: React.FC = () => {
         return "bg-[#B15147]";
       }
     }
-    return "bg-amber-600";
+    return "bg-gray-300";
   };
 
   const getConnectorStyle = (step: number): string => {
@@ -43,7 +43,7 @@ const Steps: React.FC = () => {
     if (pathname === "/payment" && step === 2) {
       return "bg-[#B15147]";
     }
-    return "bg-amber-600";
+    return "bg-gray-300";
   };
 
   return (
