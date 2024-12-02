@@ -124,7 +124,7 @@ const createPreference = async ({
         success: `https://halmacen-five.vercel.app?success=1`,
         failure: `https://halmacen-five.vercel.app?canceled=1`,
       },
-      notification_url: `https://e9c1-181-167-42-111.ngrok-free.app/api/mercado-pago/notify`,
+      notification_url: `https://halmacen-five.vercel.app/api/mercado-pago/notify`,
     },
   });
 
