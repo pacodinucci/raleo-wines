@@ -130,3 +130,20 @@ model Customer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Subscription {
+  id            String  @id @default(uuid())
+  email         String
+  name          String
+  address       String
+  region        String
+  city          String
+  zipCode       String
+  phone         String
+  plan          String
+  isActive      Boolean
+  mercadopagoId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -30,8 +30,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <Landing />
       <TextReveal />
+      <Landing />
       <div className="px-0 md:px-28 mt-28 pb-28">
         <TiendaCarousel />
       </div>

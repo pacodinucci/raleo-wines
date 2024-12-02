@@ -17,6 +17,7 @@ const SemiCart = () => {
     removeFromCart,
     updateCartItem,
     clearCart,
+    setCartClose,
   } = useCartStore();
 
   const shouldDisplayCart = isCartOpen && cart.length > 0;
@@ -110,13 +111,19 @@ const SemiCart = () => {
             <div className="flex gap-x-4 justify-center mt-2">
               <Button
                 className={`${montserrat.className} font-normal rounded-none bg-[#B15147] hover:bg-darkCustom/90`}
-                onClick={() => router.push("/cart")}
+                onClick={() => {
+                  router.push("/cart");
+                  setCartClose();
+                }}
               >
                 Ver carrito
               </Button>
               <Button
                 className={`${montserrat.className} font-normal rounded-none bg-[#B15147] hover:bg-darkCustom/90`}
-                onClick={() => router.push("/shipping")}
+                onClick={() => {
+                  router.push("/shipping");
+                  setCartClose();
+                }}
               >
                 Finalizar compra
               </Button>

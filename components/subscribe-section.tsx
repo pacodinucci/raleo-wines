@@ -1,5 +1,6 @@
 "use client";
 
+import suscribe from "@/actions/suscribe";
 import { useCustomerDataModal } from "@/hooks/use-customer-data-modal";
 import { playfair } from "@/lib/fonts";
 import { Plus } from "lucide-react";
@@ -9,6 +10,7 @@ type Props = {};
 
 const SubscribeSection = (props: Props) => {
   const onOpen = useCustomerDataModal((state) => state.onOpen);
+
   return (
     <div className={`relative h-screen text-white snap-start py-20 px-6 `}>
       <div className="absolute inset-0 -z-10">

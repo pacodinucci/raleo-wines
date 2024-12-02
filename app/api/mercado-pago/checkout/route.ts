@@ -1,171 +1,69 @@
-import { NextResponse } from "next/server";
-import mercadopago from "mercadopago";
-import { CreatePreferencePayload } from "mercadopago/models/preferences/create-payload.model";
+import { Payment, Preference } from "mercadopago";
+import { revalidatePath } from "next/cache";
 
-import { db } from "@/lib/db";
+import { mercadopagoPreference } from "@/lib/mercadopago-preference";
 
-mercadopago.configure({
-  access_token: process.env.MERCADO_PAGO_ACCESS_TOKEN!,
-});
-
-// const client = new MercadoPagoConfig({
-//   accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN!,
-// });
-
-const corsHeaders = {
-  // "Access-Control-Allow-Origin": "https://aleste.vercel.app",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
-
-interface ProductMetadata {
-  id: string;
-  quantity: number;
-}
-
-interface CustomCreatePreferencePayload extends CreatePreferencePayload {
-  metadata: { orderId: string; products: ProductMetadata[] };
-}
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
-export async function POST(
-  req: Request,
-  { params }: { params: { storeId: string } }
-) {
-  const { productIds, shippingCost, cart, data, anotherAddress } =
-    await req.json();
-
-  if (!productIds || productIds.length === 0) {
-    return new NextResponse("Product ids are required", { status: 400 });
-  }
-
-  const products = await db.product.findMany({
-    where: {
-      id: {
-        in: productIds,
-      },
-    },
-  });
-
-  const filteredProducts = productIds.flatMap((productId: any) => {
-    const matchingProducts = products.filter(
-      (product) => product.id === productId
-    );
-    return matchingProducts;
-  });
-
+const getPayment = async (paymentId: any) => {
   try {
-    const shippingDetails = anotherAddress
-      ? {
-          name: data.deliveryFullName,
-          phone: data.deliveryPhone,
-          address: data.deliveryAddressLine,
-          apart: data.deliveryApart,
-          city: data.deliveryCity,
-          region: data.deliveryRegion,
-          zipCode: data.deliveryZipCode,
-        }
-      : {
-          name: data.fullName,
-          phone: data.phone,
-          address: data.address,
-          apart: data.apart,
-          city: data.city,
-          region: data.region,
-          zipCode: data.zipCode,
-        };
-
-    let customer = await db.customer.findFirst({
-      where: { email: data.email },
-    });
-
-    if (!customer) {
-      customer = await db.customer.create({
-        data: {
-          name: data.fullName,
-          email: data.email,
-          phone: data.phone,
-          address: data.address,
+    const response = await fetch(
+      `https://api.mercadopago.com/v1/payments/${paymentId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${process.env.MERCADO_PAGO_ACCESS_TOKEN}`,
         },
-      });
-    }
+      }
+    );
 
-    const order = await db.order.create({
-      data: {
-        name: data.fullName,
-        phone: data.phone,
-        email: data.email,
-        isPaid: false,
-        paymentMethod: "mercado-pago",
-        customerId: customer.id,
-        orderItems: {
-          create: productIds.map((productId: string) => ({
-            product: {
-              connect: {
-                id: productId,
-              },
-            },
-          })),
-        },
-        billingDetails: {
-          name: data.fullName,
-          billingId: data.identification,
-          address: data.address,
-          apart: data.apart,
-          city: data.city,
-          region: data.region,
-          zipCode: data.zipCode,
-        },
-        shippingDetails,
-        deliveryDays: data.deliveryDays,
-        deliveryTime: data.deliveryTime,
-        cart,
-      },
-    });
+    const payment = await response.json();
 
-    // const preference = new Preference(client);
-
-    const metadataProducts = cart.map((product: any) => ({
-      id: product.id,
-      quantity: product.quantity,
-    }));
-
-    const preference: CustomCreatePreferencePayload = {
-      metadata: { orderId: order.id, products: metadataProducts },
-      items: cart.map((product: any) => {
-        return {
-          title: product.title,
-          unit_price: Number(product.price) * Number(product.boxSize),
-          quantity: product.quantity,
-        };
-      }),
-      shipments: {
-        cost: Number(shippingCost),
-      },
-      auto_return: "approved",
-      back_urls: {
-        success: `https://halmacen-five.vercel.app?success=1`,
-        failure: `https://halmacen-five.vercel.app?canceled=1`,
-      },
-      notification_url: `https://halmacen-five.vercel.app/api/mercado-pago/notify`,
-    };
-    const response = await mercadopago.preferences.create(preference);
-
-    if (response.body.init_point) {
-      return NextResponse.json(
-        { url: response.body.init_point },
-        {
-          headers: corsHeaders,
-        }
-      );
+    if (response.ok) {
+      return payment;
     } else {
-      throw new Error("Failed to create preference");
+      throw new Error(payment.message || "Error al obtener el pago");
     }
   } catch (error) {
-    console.log(error);
+    console.error("Error al obtener el pago:", error);
+    throw error;
+  }
+};
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    console.log("Webhook recibido:", body);
+
+    // Solo procesar si el tipo de notificación es de pago
+    if (body.type === "payment") {
+      const paymentId = body.data.id;
+
+      // Obtener información detallada del pago desde la API
+      const payment = await getPayment(paymentId);
+
+      console.log("Información del pago:", payment);
+
+      // Verificar el estado del pago y procesar metadata/external_reference
+      // if (payment.status === "approved") {
+      //   const externalReference = payment.external_reference;
+      //   const metadata = payment.metadata;
+
+      //   console.log("External Reference:", externalReference);
+      //   console.log("Metadata:", metadata);
+
+      //   // Actualiza el estado del pedido en tu base de datos
+      //   await db.order.update({
+      //     where: { id: externalReference },
+      //     data: { isPaid: true },
+      //   });
+
+      //   console.log("Pedido actualizado correctamente");
+      // }
+    }
+
+    return new Response(null, { status: 200 });
+  } catch (error) {
+    console.error("Error en el webhook:", error);
+    return new Response("Internal Server Error", { status: 500 });
   }
 }

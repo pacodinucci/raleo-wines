@@ -1,12 +1,6 @@
-// import { auth } from "./auth";
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
-import {
-  DEFAULT_LOGIN_REDIRECT,
-  apiAuthPrefix,
-  authRoutes,
-  publicRoutes,
-} from "@/routes";
+import { DEFAULT_LOGIN_REDIRECT, authRoutes } from "@/routes";
 
 const { auth } = NextAuth(authConfig);
 
@@ -14,14 +8,10 @@ export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
 
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAdminRoute = nextUrl.pathname.startsWith("/admin"); // Detectar si es una ruta /admin
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  if (isApiAuthRoute) {
-    return;
-  }
-
+  // Redirigir al dashboard si el usuario ya está logueado y accede a una ruta de autenticación
   if (isAuthRoute) {
     if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
@@ -29,10 +19,12 @@ export default auth((req) => {
     return;
   }
 
-  if (!isLoggedIn && !isPublicRoute) {
+  // Redirigir al login si no está logueado y accede a una ruta /admin
+  if (isAdminRoute && !isLoggedIn) {
     return Response.redirect(new URL("/auth/login", nextUrl));
   }
 
+  // Todas las demás rutas son públicas
   return;
 });
 

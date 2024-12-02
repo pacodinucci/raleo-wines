@@ -29,8 +29,6 @@ const TiendaCarousel: React.FC<TiendaCarouselProps> = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // console.log(cart);
-
   const handleNext = () => {
     if (carouselRef.current) {
       const totalItems = products.length;

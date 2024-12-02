@@ -15,7 +15,7 @@ const TopNavigation = () => {
 
   const opacity = useTransform(
     scrollY,
-    pathname === "/" ? [1300, 1400] : [0, 0],
+    pathname === "/" ? [2200, 2300] : [0, 0],
     pathname === "/" ? [0, 1] : [1, 1]
   );
   const translateY = useTransform(

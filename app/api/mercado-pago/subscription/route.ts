@@ -1,37 +1,29 @@
-// app/api/subscription/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { PreApproval } from "mercadopago";
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
+import { mercadopago } from "@/lib/mercadopago";
+import { db } from "@/lib/db";
 
+export async function POST(request: Request) {
   try {
-    const response = await fetch("https://api.mercadopago.com/preapproval", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_MERCADOPAGO_ACCESS_TOKEN}`,
-      },
-      body: JSON.stringify(body),
-    });
+    const body: { data: { id: string }; type: string } = await request.json();
 
-    const data = await response.json();
+    if (body.type === "subscription_preapproval") {
+      const preapproval = await new PreApproval(mercadopago).get({
+        id: body.data.id,
+      });
 
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status });
+      if (preapproval.status === "authorized") {
+        const updatedSubscription = await db.subscription.updateMany({
+          where: { mercadopagoId: preapproval.id },
+          data: { isActive: true },
+        });
+        console.log(updatedSubscription);
+      }
     }
 
-    return NextResponse.json(data, { status: 200 });
+    return new Response(null, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Error en el webhook:", error);
+    return new Response(null, { status: 500 });
   }
-}
-
-export async function GET() {
-  return NextResponse.json(
-    { message: "Method GET not allowed" },
-    { status: 405 }
-  );
 }

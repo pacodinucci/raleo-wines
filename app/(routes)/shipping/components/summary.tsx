@@ -16,6 +16,7 @@ import { useShippingStore } from "@/hooks/use-shipping-store";
 import { useFormContext } from "@/context/shipping-form-context";
 import AccordionRadioGroup from "@/components/ui/accordion-radio-group";
 import MercadoPagoCustom from "./mercadopago-custom";
+import createPreference from "@/actions/preference";
 
 const Summary = () => {
   const { cart } = useCartStore();
@@ -82,11 +83,45 @@ const Summary = () => {
     }).format(number);
   };
 
+  // const onSubmit = async (data: any) => {
+  //   if (
+  //     shippingInfo.deliveryAddress &&
+  //     (!shippingInfo.deliveryFullName ||
+  //       shippingInfo.deliveryZipCode.length < 4 ||
+  //       !shippingInfo.deliveryAddressLine ||
+  //       !shippingInfo.deliveryCity ||
+  //       !shippingInfo.deliveryPhone ||
+  //       !shippingInfo.deliveryRegion)
+  //   ) {
+  //     toast.error("Complete todos los campos de la dirección de entrega.");
+  //   } else {
+  //     console.log("Carrito:", cart);
+  //     console.log("Información de envío:", data);
+  //     console.log("Método de Pago:", paymentMethod);
+  //     console.log("DELIVERY ADDRESS -->> ", shippingInfo.deliveryAddress);
+  //     const anotherAddress = shippingInfo.deliveryAddress;
+  //     if (paymentMethod === "mercado-pago") {
+  //       const response = await axios.post(
+  //         "http://localhost:3000/api/mercado-pago/checkout",
+  //         {
+  //           productIds: cart.map((item) => item.id),
+  //           shippingCost,
+  //           cart,
+  //           data,
+  //           anotherAddress,
+  //         }
+  //       );
+  //       console.log(response);
+  //       window.location = response.data.url;
+  //     }
+  //   }
+  // };
+
   const onSubmit = async (data: any) => {
     if (
       shippingInfo.deliveryAddress &&
       (!shippingInfo.deliveryFullName ||
-        shippingInfo.deliveryZipCode.length < 4 ||
+        shippingInfo.deliveryZipCode?.length < 4 ||
         !shippingInfo.deliveryAddressLine ||
         !shippingInfo.deliveryCity ||
         !shippingInfo.deliveryPhone ||
@@ -94,24 +129,26 @@ const Summary = () => {
     ) {
       toast.error("Complete todos los campos de la dirección de entrega.");
     } else {
-      console.log("Carrito:", cart);
-      console.log("Información de envío:", data);
-      console.log("Método de Pago:", paymentMethod);
-      console.log("DELIVERY ADDRESS -->> ", shippingInfo.deliveryAddress);
-      const anotherAddress = shippingInfo.deliveryAddress;
-      if (paymentMethod === "mercado-pago") {
-        const response = await axios.post(
-          "http://localhost:3000/api/mercado-pago/checkout",
-          {
-            productIds: cart.map((item) => item.id),
-            shippingCost,
-            cart,
-            data,
-            anotherAddress,
-          }
-        );
-        console.log(response);
-        window.location = response.data.url;
+      try {
+        const validShippingCost = shippingCost ?? 0;
+        const zipCode = shippingInfo.deliveryZipCode ?? "0000";
+
+        const initPoint = await createPreference({
+          productIds: cart.map((item) => item.id),
+          shippingCost: validShippingCost,
+          cart,
+          data: {
+            ...data,
+            zipCode,
+          },
+          anotherAddress: shippingInfo.deliveryAddress,
+        });
+
+        toast.success("Redirigiendo al proceso de pago...");
+        window.location.href = initPoint!;
+      } catch (error) {
+        console.error("Error al crear la preferencia:", error);
+        toast.error("Hubo un problema al intentar procesar tu pedido.");
       }
     }
   };
