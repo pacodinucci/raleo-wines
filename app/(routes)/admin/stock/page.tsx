@@ -5,10 +5,12 @@ import React, { useEffect } from "react";
 import StockClient from "./components/client";
 import useProductStore from "@/hooks/use-product-store";
 import { StockColumn } from "./components/columns";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
 const StockPage = (props: Props) => {
+  const router = useRouter();
   const { products, fetchProducts } = useProductStore();
 
   useEffect(() => {
@@ -28,7 +30,9 @@ const StockPage = (props: Props) => {
     <div>
       <div className="flex justify-between items-center">
         <h2 className="text-2xl">Stock de productos</h2>
-        <Button>Agregar Remito</Button>
+        <Button onClick={() => router.push("/admin/reports/packingbill/new")}>
+          Agregar Remito
+        </Button>
       </div>
       <div>
         <StockClient data={stockFormat} />

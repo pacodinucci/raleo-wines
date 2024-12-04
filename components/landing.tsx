@@ -7,7 +7,6 @@ import pic2 from "../public/redwine.jpg";
 import Lenis from "lenis";
 import { useScroll, useTransform, motion } from "framer-motion";
 import { signika } from "@/lib/fonts";
-import PaintEffect from "./paint-effect";
 
 const Landing = () => {
   const container = useRef<HTMLDivElement | null>(null);
