@@ -153,6 +153,7 @@ model Packingbill {
   packingbillNumber String  @unique
   products          Json // Almacena un array de objetos con productId y stock
   observations      String?
+  linkedBillNumber  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

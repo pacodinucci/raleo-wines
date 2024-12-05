@@ -23,12 +23,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 import { Button } from "@/components/ui/button";
 import useProductStore from "@/hooks/use-product-store"; // Ruta a tu estado de productos
-import { Trash2 } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Trash2 } from "lucide-react";
 import { Packingbill } from "@prisma/client";
 import axios from "axios";
 import { toast } from "sonner";
+import { ProductCombobox } from "@/components/ui/product-combobox";
+import { cn } from "@/lib/utils";
 
 interface PackingbillFormProps {
   initialData: Packingbill | null;
@@ -49,10 +66,14 @@ const formSchema = z.object({
     .array(productSchema)
     .min(1, { message: "Debe haber al menos un producto en la lista." }),
   observations: z.string().optional(),
+  linkedBillNumber: z.string().optional(),
 });
 
 const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
   const router = useRouter();
+
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
 
   const {
     products,
@@ -114,7 +135,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
           className="space-y-8 pb-10"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div className="space-y-2 w-full">
+          <div className="space-y-6 w-full">
             <div>
               <h3 className="text-lg font-medium">Crear Remito</h3>
               <p className="text-sm text-muted-foreground">
@@ -122,7 +143,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
               </p>
             </div>
             <Separator className="bg-primary/10" />
-            <div>
+            <div className="w-3/4 flex gap-8">
               <FormField
                 name="packingbillNumber"
                 control={form.control}
@@ -135,10 +156,22 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                   </FormItem>
                 )}
               />
+              <FormField
+                name="packingbillNumber"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="w-1/3">
+                    <FormLabel>Número de Factura</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
             <div className="space-y-4">
               <div className="flex space-x-4 w-3/4">
-                <div className="flex-1">
+                <div className="w-[70%]">
                   <FormLabel>Producto</FormLabel>
                 </div>
                 <div className="flex-1">
@@ -156,7 +189,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                     render={({ field }) => (
                       <FormItem className="w-[70%]">
                         <FormControl>
-                          <Select
+                          {/* <Select
                             onValueChange={field.onChange}
                             value={field.value}
                           >
@@ -170,12 +203,71 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                                     key={product.id}
                                     value={product.id}
                                   >
-                                    {product.title}
+                                    {`${product.title} - Bodega ${product.winery}`}
                                   </SelectItem>
                                 ))}
                               </SelectGroup>
                             </SelectContent>
-                          </Select>
+                          </Select> */}
+                          <Popover open={open} onOpenChange={setOpen}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={open}
+                                className="w-full justify-between"
+                              >
+                                {value
+                                  ? products.find(
+                                      (product) => product.title === value
+                                    )?.title
+                                  : "Select framework..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              align="start"
+                              className="w-full p-0"
+                              style={{
+                                width: "var(--radix-popper-trigger-width)",
+                              }}
+                            >
+                              <Command>
+                                <CommandInput placeholder="Buscar producto" />
+                                <CommandList>
+                                  <CommandEmpty>
+                                    No se encontraron productos.
+                                  </CommandEmpty>
+                                  <CommandGroup>
+                                    {products.map((product) => (
+                                      <CommandItem
+                                        key={product.id}
+                                        value={product.title}
+                                        onSelect={(currentValue) => {
+                                          setValue(
+                                            currentValue === value
+                                              ? ""
+                                              : currentValue
+                                          );
+                                          setOpen(false);
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            value === product.title
+                                              ? "opacity-100"
+                                              : "opacity-0"
+                                          )}
+                                        />
+                                        {product.title} - {product.winery}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                         </FormControl>
                       </FormItem>
                     )}
@@ -216,7 +308,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                 onClick={addProduct}
                 disabled={isLoading}
               >
-                Agregar Producto
+                <Plus />
               </Button>
             </div>
             <FormField

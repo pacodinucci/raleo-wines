@@ -5,7 +5,8 @@ import { db } from "@/lib/db";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { packingbillNumber, products, observations } = body;
+    const { packingbillNumber, products, observations, linkedBillNumber } =
+      body;
 
     if (!packingbillNumber || !products)
       return new NextResponse("Numero de remito y productos son requeridos.", {
@@ -13,12 +14,12 @@ export async function POST(req: Request) {
       });
 
     const packingbill = await db.$transaction(async (prisma) => {
-      // Crear el remito
       const newPackingbill = await prisma.packingbill.create({
         data: {
           packingbillNumber,
-          products: JSON.stringify(products), // Guardar productos como JSON
+          products: JSON.stringify(products),
           observations: observations || null,
+          linkedBillNumber: linkedBillNumber || null,
         },
       });
 

@@ -50,10 +50,10 @@ export async function POST(req: Request) {
       !composition ||
       !cellar ||
       !alcohol ||
-      !ph ||
+      // !ph ||
       // !discount ||
       !price ||
-      !stock ||
+      // !stock ||
       // !external_reference ||
       !available ||
       !boxSize ||
