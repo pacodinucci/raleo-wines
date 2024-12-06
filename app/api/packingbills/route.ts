@@ -5,19 +5,28 @@ import { db } from "@/lib/db";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { packingbillNumber, products, observations, linkedBillNumber } =
-      body;
+    const {
+      packingbillNumber,
+      products,
+      observations,
+      linkedBillNumber,
+      company,
+    } = body;
 
-    if (!packingbillNumber || !products)
-      return new NextResponse("Numero de remito y productos son requeridos.", {
-        status: 400,
-      });
+    if (!packingbillNumber || !products || !company)
+      return new NextResponse(
+        "Numero de remito, productos y titular son requeridos.",
+        {
+          status: 400,
+        }
+      );
 
     const packingbill = await db.$transaction(async (prisma) => {
       const newPackingbill = await prisma.packingbill.create({
         data: {
           packingbillNumber,
           products: JSON.stringify(products),
+          company,
           observations: observations || null,
           linkedBillNumber: linkedBillNumber || null,
         },

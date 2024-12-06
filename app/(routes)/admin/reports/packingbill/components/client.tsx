@@ -1,12 +1,12 @@
 import { DataTable } from "@/components/ui/data-table";
 import React from "react";
-import { columns, ProductsColumn } from "./columns";
+import { columns, PackingbillsColumn } from "./columns";
 
-interface ProductsClientProps {
-  data: ProductsColumn[];
+interface PackingbillsClientProps {
+  data: PackingbillsColumn[];
 }
 
-const ProductsClient: React.FC<ProductsClientProps> = ({ data }) => {
+const PackingbillsClient: React.FC<PackingbillsClientProps> = ({ data }) => {
   return (
     <div>
       <DataTable columns={columns} data={data} searchKey="title" />
@@ -14,4 +14,4 @@ const ProductsClient: React.FC<ProductsClientProps> = ({ data }) => {
   );
 };
 
-export default ProductsClient;
+export default PackingbillsClient;

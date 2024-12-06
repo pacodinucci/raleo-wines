@@ -152,6 +152,7 @@ model Packingbill {
   id                String  @id @default(uuid())
   packingbillNumber String  @unique
   products          Json // Almacena un array de objetos con productId y stock
+  company           String
   observations      String?
   linkedBillNumber  String?
 

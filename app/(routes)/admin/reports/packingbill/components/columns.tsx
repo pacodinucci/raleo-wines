@@ -7,60 +7,31 @@ import CellAction from "./cell-action";
 export type PackingbillsColumn = {
   id: string;
   packingbillNumber: string;
+  linkedBillNumber: string;
+  company: string;
   observations?: string;
   createdAt: string;
 };
 
 export const columns: ColumnDef<PackingbillsColumn>[] = [
   {
-    accessorKey: "src",
-    header: "Imagen",
-    cell: ({ row }) => (
-      <div>
-        <Image
-          src={row.original.src}
-          alt="Imagen vino Al Este"
-          width={50}
-          height={50}
-        />
-      </div>
-    ),
+    accessorKey: "packingbillNumber",
+    header: "Número de Remito",
   },
   {
-    accessorKey: "title",
-    header: "Título",
+    accessorKey: "company",
+    header: "Titular",
   },
   {
-    accessorKey: "winery",
-    header: "Bodega",
+    accessorKey: "linkedBillNumber",
+    header: "Número de Factura",
   },
   {
-    accessorKey: "year",
-    header: "Cosecha",
+    accessorKey: "observations",
+    header: "Observaciones",
   },
   {
-    accessorKey: "type",
-    header: "Variedad",
-  },
-  {
-    accessorKey: "price",
-    header: "Precio",
-  },
-  {
-    accessorKey: "stock",
-    header: "Stock",
-  },
-  {
-    accessorKey: "available",
-    header: "Disponible",
-    cell: ({ row }) => <span>{row.original.available ? "Si" : "No"}</span>,
-  },
-  {
-    accessorKey: "updatedAt",
-    header: "Última Actualización",
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
+    accessorKey: "createdAt",
+    header: "Fecha",
   },
 ];

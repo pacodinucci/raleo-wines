@@ -52,10 +52,10 @@ export function ProductCombobox({ products, value, onChange }: ComboboxProps) {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className="p-0">
         <Command>
           <CommandInput
-            placeholder="Search by winery or title..."
+            placeholder="Buscar por vino"
             value={search}
             onValueChange={setSearch} // Corrected: Use onValueChange instead of onChange
           />

@@ -386,18 +386,6 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
                 )}
               />
               <FormField
-                name="stock"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Stock</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="number" />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
                 name="weight"
                 control={form.control}
                 render={({ field }) => (

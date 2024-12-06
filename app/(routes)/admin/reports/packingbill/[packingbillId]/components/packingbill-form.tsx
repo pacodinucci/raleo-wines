@@ -67,6 +67,7 @@ const formSchema = z.object({
     .min(1, { message: "Debe haber al menos un producto en la lista." }),
   observations: z.string().optional(),
   linkedBillNumber: z.string().optional(),
+  company: z.string().min(1, { message: "Titular es requerido." }),
 });
 
 const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
@@ -145,6 +146,20 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
             <Separator className="bg-primary/10" />
             <div className="w-3/4 flex gap-8">
               <FormField
+                name="company"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="w-1/3">
+                    <FormLabel>Titular</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="w-3/4 flex gap-8">
+              <FormField
                 name="packingbillNumber"
                 control={form.control}
                 render={({ field }) => (
@@ -157,7 +172,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                 )}
               />
               <FormField
-                name="packingbillNumber"
+                name="linkedBillNumber"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="w-1/3">
@@ -189,7 +204,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                     render={({ field }) => (
                       <FormItem className="w-[70%]">
                         <FormControl>
-                          {/* <Select
+                          <Select
                             onValueChange={field.onChange}
                             value={field.value}
                           >
@@ -208,8 +223,8 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                                 ))}
                               </SelectGroup>
                             </SelectContent>
-                          </Select> */}
-                          <Popover open={open} onOpenChange={setOpen}>
+                          </Select>
+                          {/* <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
@@ -221,16 +236,16 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                                   ? products.find(
                                       (product) => product.title === value
                                     )?.title
-                                  : "Select framework..."}
+                                  : "Seleccionar producto"}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent
                               align="start"
-                              className="w-full p-0"
-                              style={{
-                                width: "var(--radix-popper-trigger-width)",
-                              }}
+                              className="w-[100%] p-0"
+                              // style={{
+                              //   width: "var(--radix-popper-trigger-width)",
+                              // }}
                             >
                               <Command>
                                 <CommandInput placeholder="Buscar producto" />
@@ -267,7 +282,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                                 </CommandList>
                               </Command>
                             </PopoverContent>
-                          </Popover>
+                          </Popover> */}
                         </FormControl>
                       </FormItem>
                     )}
@@ -276,7 +291,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                     name={`products.${index}.stock`}
                     control={form.control}
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className="w-[10%]">
                         <FormControl>
                           <Input
                             type="number"
