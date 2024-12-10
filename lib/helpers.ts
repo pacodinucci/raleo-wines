@@ -1,4 +1,5 @@
 import { CartProduct } from "@/hooks/use-cart-store";
+import { Product } from "@prisma/client";
 
 export const calculateWeight = (cart: CartProduct[]) => {
   return cart.reduce((totalWeight, product) => {
@@ -14,4 +15,12 @@ export const formatNumber = (number: number): string => {
     style: "currency",
     currency: "ARS",
   }).format(number);
+};
+
+export const getProductName = (
+  products: Product[],
+  productId: string
+): string => {
+  const product = products.find((product) => product.id === productId);
+  return product ? product.title : "Desconocido";
 };

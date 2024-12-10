@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Sidebar = () => {
   const pathname = usePathname();
@@ -129,28 +129,31 @@ export const Sidebar = () => {
               </div>
 
               {/* Submenu para Reportes */}
-              {route.submenu && isReportsOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden"
-                >
-                  {route.submenu.map((submenu) => (
-                    <div
-                      key={submenu.href}
-                      className={cn(
-                        "text-muted-foreground w-full text-xs group flex p-3 pl-8 justify-start font-medium cursor-pointer bg-white/20 hover:text-white hover:bg-primary/10 transition",
-                        pathname === submenu.href && "bg-primary/10 text-white"
-                      )}
-                      onClick={() => onNavigate(submenu.href, route.pro)}
-                    >
-                      <submenu.icon className="h-4 w-4 mr-2" />
-                      {submenu.label}
-                    </div>
-                  ))}
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {route.submenu && isReportsOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    {route.submenu.map((submenu) => (
+                      <div
+                        key={submenu.href}
+                        className={cn(
+                          "text-muted-foreground w-full text-xs group flex mx-5 p-3 pl-8 justify-start font-medium cursor-pointer bg-white/20 border-l border-neutral-300 hover:text-white hover:bg-primary/10 transition",
+                          pathname === submenu.href &&
+                            "bg-primary/10 text-white"
+                        )}
+                        onClick={() => onNavigate(submenu.href, route.pro)}
+                      >
+                        <submenu.icon className="h-4 w-4 mr-2" />
+                        {submenu.label}
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
         </div>

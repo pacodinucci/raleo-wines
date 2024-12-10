@@ -154,7 +154,26 @@ model Packingbill {
   products          Json // Almacena un array de objetos con productId y stock
   company           String
   observations      String?
-  linkedBillNumber  String?
+  // bill              Bill?
+  bill              Bill?   @relation(fields: [billId], references: [id]) // Packingbill ahora referencia a Bill
+  billId            String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Bill {
+  id           String        @id @default(uuid())
+  billNumber   String        @unique
+  products     Json
+  subtotal     Int
+  iva          Int
+  total        Int
+  observations String
+  company      String
+  // packingbill       Packingbill @relation(fields: [packingbillNumber], references: [packingbillNumber])
+  // packingbillNumber String      @unique
+  packingbills Packingbill[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

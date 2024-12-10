@@ -23,18 +23,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useRouter } from "next/navigation";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends object, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey: string;
+  tableType?: "packingbill" | "other";
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string }, TValue>({
   columns,
   data,
   searchKey,
+  tableType = "other",
 }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const table = useReactTable({
@@ -86,7 +90,15 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="text-xs md:text-sm"
+                  onClick={() =>
+                    tableType === "packingbill" &&
+                    router.push(`/admin/reports/packingbill/${row.original.id}`)
+                  }
+                  className={`${
+                    tableType === "packingbill"
+                      ? "cursor-pointer hover:bg-gray-100"
+                      : ""
+                  }`}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="">

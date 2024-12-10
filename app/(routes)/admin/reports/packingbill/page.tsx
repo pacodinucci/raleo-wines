@@ -1,21 +1,34 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import PackingbillsClient from "./components/client";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { PackingbillsColumn } from "./components/columns";
+import usePackingbillStore from "@/hooks/use-packingbill-store";
 
-type Props = {};
+const PackingbillPage = () => {
+  // const packingbills = await db.packingbill.findMany({
+  //   include: {
+  //     bill: true,
+  //   },
+  // });
 
-const PackingbillPage = async (props: Props) => {
-  const packingbills = await db.packingbill.findMany();
+  const { packingbills, fetchPackingbills, isLoading, error } =
+    usePackingbillStore();
+
+  useEffect(() => {
+    fetchPackingbills();
+  }, [fetchPackingbills]);
 
   const formattedPackingbills = packingbills.map((bill) => ({
     ...bill,
     observations: bill.observations ?? undefined,
-    linkedBillNumber: bill.linkedBillNumber ?? "",
+    billNumber: bill.bill?.billNumber ?? "",
     createdAt: format(new Date(bill.createdAt), "dd/MM/yyyy", { locale: es }),
     updatedAt: format(new Date(bill.updatedAt), "dd/MM/yyyy", { locale: es }),
   }));

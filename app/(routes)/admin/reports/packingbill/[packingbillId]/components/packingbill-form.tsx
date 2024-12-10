@@ -46,6 +46,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { ProductCombobox } from "@/components/ui/product-combobox";
 import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 
 interface PackingbillFormProps {
   initialData: Packingbill | null;
@@ -66,15 +67,12 @@ const formSchema = z.object({
     .array(productSchema)
     .min(1, { message: "Debe haber al menos un producto en la lista." }),
   observations: z.string().optional(),
-  linkedBillNumber: z.string().optional(),
+  // linkedBillNumber: z.string().optional(),
   company: z.string().min(1, { message: "Titular es requerido." }),
 });
 
 const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
   const router = useRouter();
-
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
   const {
     products,
@@ -83,25 +81,44 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
   } = useProductStore();
 
   useEffect(() => {
-    // Cargar productos al montar el componente
     fetchProducts();
   }, [fetchProducts]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      packingbillNumber: "",
-      products: [{ productId: "", stock: 0 }],
-    },
+    defaultValues: initialData
+      ? {
+          packingbillNumber: initialData.packingbillNumber || "",
+          company: initialData.company || "",
+          products: Array.isArray(initialData.products)
+            ? (
+                initialData.products as Array<{
+                  productId: string;
+                  stock: number;
+                }>
+              ).map((product) => ({
+                productId: product.productId || "",
+                stock: product.stock || 0,
+              }))
+            : [{ productId: "", stock: 0 }],
+          observations: initialData.observations || "",
+        }
+      : {
+          packingbillNumber: "",
+          company: "",
+          products: [{ productId: "", stock: 0 }],
+          observations: "",
+        },
   });
 
   const isLoading = form.formState.isSubmitting;
 
+  console.log("InitialData --> ", initialData);
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
     try {
       if (initialData) {
-        await axios.patch("/api/packingbills", data);
+        await axios.patch("/api/packingbills", { ...data, id: initialData.id });
         toast.success("Remito actualizado exitosamente.");
         router.push("/admin/stock");
       } else {
@@ -111,7 +128,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("No se pudo crear el remito.");
+      toast.error("No se pudo cargar el remito.");
     }
   };
 
@@ -171,7 +188,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 name="linkedBillNumber"
                 control={form.control}
                 render={({ field }) => (
@@ -182,7 +199,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                     </FormControl>
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
             <div className="space-y-4">
               <div className="flex space-x-4 w-3/4">
@@ -224,65 +241,6 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                               </SelectGroup>
                             </SelectContent>
                           </Select>
-                          {/* <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={open}
-                                className="w-full justify-between"
-                              >
-                                {value
-                                  ? products.find(
-                                      (product) => product.title === value
-                                    )?.title
-                                  : "Seleccionar producto"}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              align="start"
-                              className="w-[100%] p-0"
-                              // style={{
-                              //   width: "var(--radix-popper-trigger-width)",
-                              // }}
-                            >
-                              <Command>
-                                <CommandInput placeholder="Buscar producto" />
-                                <CommandList>
-                                  <CommandEmpty>
-                                    No se encontraron productos.
-                                  </CommandEmpty>
-                                  <CommandGroup>
-                                    {products.map((product) => (
-                                      <CommandItem
-                                        key={product.id}
-                                        value={product.title}
-                                        onSelect={(currentValue) => {
-                                          setValue(
-                                            currentValue === value
-                                              ? ""
-                                              : currentValue
-                                          );
-                                          setOpen(false);
-                                        }}
-                                      >
-                                        <Check
-                                          className={cn(
-                                            "mr-2 h-4 w-4",
-                                            value === product.title
-                                              ? "opacity-100"
-                                              : "opacity-0"
-                                          )}
-                                        />
-                                        {product.title} - {product.winery}
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover> */}
                         </FormControl>
                       </FormItem>
                     )}
@@ -333,7 +291,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                 <FormItem className="w-3/4">
                   <FormLabel>Observaciones</FormLabel>
                   <FormControl>
-                    <textarea
+                    <Textarea
                       {...field}
                       placeholder="Ingrese observaciones adicionales..."
                       className="block w-full h-24 p-2 border rounded-md resize-none border-gray-300 focus:ring focus:ring-primary/30"
@@ -348,9 +306,13 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
               type="submit"
               variant="default"
               className="mt-4"
-              disabled={isLoading}
+              disabled={isLoading || (initialData?.billId ? true : false)}
             >
-              Guardar Remito
+              {initialData
+                ? initialData.billId
+                  ? "Remito ya está asociado a una factura"
+                  : "Actualizar Remito"
+                : "Guardar Remito"}
             </Button>
           </div>
         </form>

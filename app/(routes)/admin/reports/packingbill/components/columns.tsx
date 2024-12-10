@@ -7,7 +7,8 @@ import CellAction from "./cell-action";
 export type PackingbillsColumn = {
   id: string;
   packingbillNumber: string;
-  linkedBillNumber: string;
+  // bill: string;
+  billNumber: string;
   company: string;
   observations?: string;
   createdAt: string;
@@ -23,7 +24,7 @@ export const columns: ColumnDef<PackingbillsColumn>[] = [
     header: "Titular",
   },
   {
-    accessorKey: "linkedBillNumber",
+    accessorKey: "billNumber",
     header: "Número de Factura",
   },
   {

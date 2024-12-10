@@ -7,9 +7,15 @@ interface PackingbillsClientProps {
 }
 
 const PackingbillsClient: React.FC<PackingbillsClientProps> = ({ data }) => {
+  console.log("Packingbill Data --> ", data);
   return (
     <div>
-      <DataTable columns={columns} data={data} searchKey="title" />
+      <DataTable
+        columns={columns}
+        data={data}
+        searchKey="title"
+        tableType="packingbill"
+      />
     </div>
   );
 };
