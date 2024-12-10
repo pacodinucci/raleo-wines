@@ -4,16 +4,19 @@ import { Bill } from "@prisma/client";
 
 interface BillStoreProps {
   bills: Bill[];
+  bill: Bill | null;
   isLoading: boolean;
   error: string | null;
   fetchBills: () => Promise<void>;
   addBill: (bill: Bill) => Promise<void>;
   removeBill: (id: string) => Promise<void>;
   updateBill: (id: string, updatedBill: Partial<Bill>) => Promise<void>;
+  getBillById: (id: string) => Promise<Bill | null>;
 }
 
 const useBillStore = create<BillStoreProps>((set) => ({
   bills: [],
+  bill: null,
   isLoading: false,
   error: null,
 
@@ -76,6 +79,21 @@ const useBillStore = create<BillStoreProps>((set) => ({
     } catch (error) {
       console.error("Error updating bill:", error);
       set({ error: "Error al actualizar la factura." });
+    }
+  },
+
+  getBillById: async (id: string) => {
+    try {
+      set({ isLoading: true, error: null });
+      const response = await axios.get(`/api/bill?billId=${id}`); // URL corregida
+      const bill = response.data;
+
+      set({ bill, isLoading: false });
+      return bill;
+    } catch (error) {
+      console.error("Error getting bill: ", error);
+      set({ error: "Error obteniendo la factura" });
+      return null;
     }
   },
 }));

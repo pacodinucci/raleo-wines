@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,12 +41,13 @@ import {
 import { Button } from "@/components/ui/button";
 import useProductStore from "@/hooks/use-product-store"; // Ruta a tu estado de productos
 import { Check, ChevronsUpDown, Plus, Trash2 } from "lucide-react";
-import { Packingbill } from "@prisma/client";
+import { Bill, Packingbill } from "@prisma/client";
 import axios from "axios";
 import { toast } from "sonner";
 import { ProductCombobox } from "@/components/ui/product-combobox";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import useBillStore from "@/hooks/use-bill-store";
 
 interface PackingbillFormProps {
   initialData: Packingbill | null;
@@ -73,6 +74,7 @@ const formSchema = z.object({
 
 const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
   const router = useRouter();
+  const [bill, setBill] = useState<Bill | null>(null);
 
   const {
     products,
@@ -80,9 +82,26 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
     isLoading: productsLoading,
   } = useProductStore();
 
+  const { getBillById } = useBillStore();
+
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  useEffect(() => {
+    const fetchBill = async () => {
+      if (initialData?.billId) {
+        const fetchedBill = await getBillById(initialData.billId);
+        setBill(fetchedBill);
+      }
+    };
+
+    fetchBill();
+  }, [initialData?.billId, getBillById]);
+
+  useEffect(() => {
+    console.log(bill);
+  }, [bill]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -161,7 +180,7 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
               </p>
             </div>
             <Separator className="bg-primary/10" />
-            <div className="w-3/4 flex gap-8">
+            <div className="w-3/4 flex justify-between">
               <FormField
                 name="company"
                 control={form.control}
@@ -174,6 +193,21 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                   </FormItem>
                 )}
               />
+              {initialData ? (
+                <div>
+                  {bill ? (
+                    <div>
+                      <h4 className="text-xl font-medium text-neutral-700">
+                        Nro. Factura: {bill.billNumber}
+                      </h4>
+                    </div>
+                  ) : (
+                    <Button>Facturar Remito</Button>
+                  )}
+                </div>
+              ) : (
+                ""
+              )}
             </div>
             <div className="w-3/4 flex gap-8">
               <FormField
@@ -188,18 +222,6 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                   </FormItem>
                 )}
               />
-              {/* <FormField
-                name="linkedBillNumber"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="w-1/3">
-                    <FormLabel>Número de Factura</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              /> */}
             </div>
             <div className="space-y-4">
               <div className="flex space-x-4 w-3/4">

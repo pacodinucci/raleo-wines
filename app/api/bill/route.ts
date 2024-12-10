@@ -80,8 +80,24 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const billId = searchParams.get("billId");
+
+    if (billId) {
+      const bill = await db.bill.findUnique({
+        where: { id: billId },
+        include: { packingbills: true },
+      });
+
+      if (!bill) {
+        return new NextResponse("Factura no encontrada", { status: 404 });
+      }
+
+      return NextResponse.json(bill);
+    }
+
     const bills = await db.bill.findMany({
       include: {
         packingbills: true,
