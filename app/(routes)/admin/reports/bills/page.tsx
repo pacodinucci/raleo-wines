@@ -1,14 +1,22 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import BillsClient from "./components/client";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import useBillStore from "@/hooks/use-bill-store";
 
-const BillsPage = async () => {
-  const bills = await db.bill.findMany();
+const BillsPage = () => {
+  // const bills = await db.bill.findMany();
+  const { bills, fetchBills } = useBillStore();
+
+  useEffect(() => {
+    fetchBills();
+  }, [fetchBills]);
 
   const formattedBills = bills.map((bill) => ({
     id: bill.id,

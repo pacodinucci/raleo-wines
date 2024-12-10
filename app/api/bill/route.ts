@@ -79,3 +79,18 @@ export async function POST(req: Request) {
     return new NextResponse("Internal error", { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const bills = await db.bill.findMany({
+      include: {
+        packingbills: true,
+      },
+    });
+
+    return NextResponse.json(bills);
+  } catch (error) {
+    console.error("[BILL_GET]", error);
+    return new NextResponse("Error interno del servidor", { status: 500 });
+  }
+}
