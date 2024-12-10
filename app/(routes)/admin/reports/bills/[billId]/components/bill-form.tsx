@@ -32,38 +32,49 @@ import usePackingbillStore from "@/hooks/use-packingbill-store";
 import useProductStore from "@/hooks/use-product-store";
 import { formatNumber, getProductName } from "@/lib/helpers";
 import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface BillFormProps {
   initialData: Bill | null;
 }
 
 export const productSchema = z.object({
-  name: z.string().min(1, "El nombre del producto es obligatorio"),
+  // name: z.string().min(1, "El nombre del producto es obligatorio"),
   unitPrice: z
     .number()
     .min(0, "El precio del producto debe ser mayor o igual a 0"),
   quantity: z.number().int().min(1, "La cantidad debe ser al menos 1"),
-  subtotal: z.number().min(0, "El subtotal debe ser mayor o igual a 0"),
+  // subtotal: z
+  //   .number()
+  //   .min(0, "El subtotal del producto debe ser mayor o igual a 0"),
+  productId: z.string().min(1, "Id de producto es requerido."),
 });
 
 export const formSchema = z.object({
   billNumber: z
     .string()
     .min(1, { message: "El numero de factura es requerido" }),
-  linkedPackingbills: z
-    .array(z.string())
+  packingbills: z
+    .array(
+      z.object({
+        id: z.string().min(1, "El ID del remito es requerido"),
+      })
+    )
     .min(1, "Debe asociar al menos un remito"),
   company: z
     .string()
     .min(1, { message: "El titual de la factura es requerido." }),
   products: z.array(productSchema).min(1, "Debe agregar al menos un producto"),
   observations: z.string().optional(),
-  subtotal: z.number().min(0, "El subtotal debe ser mayor o igual a 0"),
-  iva: z.number().min(0, "El IVA debe ser mayor o igual a 0"),
-  total: z.number().min(0, "El total debe ser mayor o igual a 0"),
+  subtotal: z.number().optional(),
+  iva: z.number().optional(),
+  total: z.number().optional(),
 });
 
 const BillForm = ({ initialData }: BillFormProps) => {
+  const router = useRouter();
   const [availablePackingbills, setAvailablePackingbills] = useState<
     Packingbill[]
   >([]);
@@ -73,6 +84,9 @@ const BillForm = ({ initialData }: BillFormProps) => {
   const [productsTable, setProductsTable] = useState<
     { productId: string; name: string; quantity: number; price: number }[]
   >([]);
+  const [remitoColors, setRemitoColors] = useState<{ [key: string]: string }>(
+    {}
+  );
 
   const { packingbills, fetchPackingbills } = usePackingbillStore();
   const { products, fetchProducts } = useProductStore();
@@ -135,7 +149,7 @@ const BillForm = ({ initialData }: BillFormProps) => {
         }
       : {
           billNumber: "",
-          linkedPackingbills: [],
+          packingbills: [],
           products: [],
           subtotal: 0,
           iva: 0,
@@ -145,56 +159,93 @@ const BillForm = ({ initialData }: BillFormProps) => {
 
   const isLoading = form.formState.isSubmitting;
 
+  useEffect(() => {
+    const formattedProducts = productsTable.map((product) => ({
+      productId: product.productId,
+      // name: product.name,
+      unitPrice: product.price,
+      quantity: product.quantity,
+      // subtotal: product.price * product.quantity,
+    }));
+
+    const subtotal = productsTable.reduce(
+      (acc, product) => acc + product.price * product.quantity,
+      0
+    );
+    const iva = subtotal * 0.21;
+    const total = subtotal + iva;
+
+    form.setValue("products", formattedProducts);
+    form.setValue("subtotal", subtotal);
+    form.setValue("iva", iva);
+    form.setValue("total", total);
+  }, [productsTable]);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const formattedData = {
-        billNumber: values.billNumber,
-        packingbills: selectedPackingbills.map((id) => ({ id })),
-        products: productsTable.map((product) => ({
-          productId: product.productId,
-          quantity: product.quantity,
-          unitPrice: product.price,
-        })),
-        observations: values.observations || "Sin observaciones",
-        company: values.company,
-        subtotal: productsTable.reduce(
-          (acc, product) => acc + product.quantity * product.price,
-          0
-        ),
-        iva:
-          productsTable.reduce(
-            (acc, product) => acc + product.quantity * product.price,
-            0
-          ) * 0.21,
-        total:
-          productsTable.reduce(
-            (acc, product) => acc + product.quantity * product.price,
-            0
-          ) * 1.21,
-      };
-
-      console.log("Datos a enviar:", formattedData);
-      // Aquí enviarías la información al servidor o harías lo que sea necesario.
+      console.log("Datos a enviar:", values);
+      await axios.post("/api/bill", values);
+      toast.success("Factura cargada con éxito.");
+      router.push("/admin/reports/bills");
     } catch (error) {
       console.error("Error en el formulario:", error);
     }
   };
 
+  // const togglePackingbill = (id: string) => {
+  //   setSelectedPackingbills((prev) =>
+  //     prev.includes(id) ? prev.filter((billId) => billId !== id) : [...prev, id]
+  //   );
+  // };
+
+  // const selectedPackingbillNumbers = availablePackingbills
+  //   .filter((packingbill) => selectedPackingbills.includes(packingbill.id))
+  //   .map((packingbill) => packingbill.packingbillNumber);
+
   const togglePackingbill = (id: string) => {
-    setSelectedPackingbills((prev) =>
-      prev.includes(id) ? prev.filter((billId) => billId !== id) : [...prev, id]
-    );
+    setSelectedPackingbills((prev) => {
+      const updatedPackingbills = prev.includes(id)
+        ? prev.filter((billId) => billId !== id)
+        : [...prev, id];
+
+      const formattedPackingbills = updatedPackingbills.map((billId) => ({
+        id: billId,
+      }));
+
+      form.setValue("packingbills", formattedPackingbills);
+
+      return updatedPackingbills;
+    });
   };
 
   const selectedPackingbillNumbers = availablePackingbills
     .filter((packingbill) => selectedPackingbills.includes(packingbill.id))
     .map((packingbill) => packingbill.packingbillNumber);
 
+  const assignColor = (number: string) => {
+    if (!remitoColors[number]) {
+      setRemitoColors((prev) => ({
+        ...prev,
+        [number]: colors[Math.floor(Math.random() * colors.length)],
+      }));
+    }
+    return remitoColors[number] || colors[0];
+  };
+
+  const colors = ["#C4F5C8", "#F5DBC4", "#D1C4F4", "#F5F1C4"];
+
   return (
     <div className="h-full p-4 space-y-2 max-w-6xl">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          // onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={(e) => {
+            e.preventDefault(); // Evita que el formulario se envíe automáticamente
+
+            form.handleSubmit((values) => {
+              onSubmit(values);
+            })(e);
+          }}
           className="space-y-8 pb-10"
         >
           <div className="space-y-2 w-full">
@@ -216,6 +267,7 @@ const BillForm = ({ initialData }: BillFormProps) => {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -228,111 +280,127 @@ const BillForm = ({ initialData }: BillFormProps) => {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-              <div className="flex flex-col gap-y-2">
-                <FormLabel>Seleccionar Remitos</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-96 text-left">
-                      {selectedPackingbillNumbers.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 w-full">
-                          {selectedPackingbillNumbers.map((number) => (
-                            <span
-                              key={number}
-                              className="bg-gray-100 px-4 py-1 rounded text-sm"
-                            >
-                              {number}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">
-                          Seleccionar remitos
-                        </span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-96 translate-x-4">
-                    <div className="max-h-60 overflow-y-auto p-2">
-                      <TooltipProvider>
-                        {availablePackingbills.map((packingbill) => (
-                          <Tooltip key={packingbill.id}>
-                            <TooltipTrigger asChild>
-                              <div
-                                onClick={() =>
-                                  togglePackingbill(packingbill.id)
-                                }
-                                className={`flex items-center justify-between p-2 border-b border-gray-200 cursor-pointer ${
-                                  selectedPackingbills.includes(packingbill.id)
-                                    ? "bg-gray-100"
-                                    : "hover:bg-gray-50"
-                                }`}
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <Checkbox
-                                    checked={selectedPackingbills.includes(
-                                      packingbill.id
-                                    )}
-                                    onCheckedChange={() =>
-                                      togglePackingbill(packingbill.id)
-                                    }
-                                    onClick={(e) => e.stopPropagation()}
-                                  />
-                                  <span className="text-gray-500 text-sm">
-                                    {packingbill.company}
-                                  </span>
-                                </div>
-                                <span className="text-gray-500 text-sm">
-                                  {packingbill.packingbillNumber}
-                                </span>
+              <div>
+                <FormField
+                  name="packingbills"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Seleccionar Remitos</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-96 text-left">
+                            {selectedPackingbillNumbers.length > 0 ? (
+                              <div className="flex flex-wrap gap-2 w-full">
+                                {selectedPackingbillNumbers.map((number) => {
+                                  const color = assignColor(number);
+                                  return (
+                                    <span
+                                      key={number}
+                                      style={{ backgroundColor: color }}
+                                      className="px-4 py-1 rounded text-sm"
+                                    >
+                                      {number}
+                                    </span>
+                                  );
+                                })}
                               </div>
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-white shadow-md">
-                              <div className="text-sm text-gray-700">
-                                <ul className="ml-4">
-                                  {Array.isArray(packingbill.products) ? (
-                                    (
-                                      packingbill.products as {
-                                        productId: string;
-                                        stock: number;
-                                      }[]
-                                    ).map((product, index) => (
-                                      <li key={index}>
-                                        <span>
-                                          {getProductName(
-                                            products,
-                                            product?.productId
+                            ) : (
+                              <span className="text-gray-400">
+                                Seleccionar remitos
+                              </span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-96 translate-x-4">
+                          <div className="max-h-60 overflow-y-auto p-2">
+                            <TooltipProvider>
+                              {availablePackingbills.map((packingbill) => (
+                                <Tooltip key={packingbill.id}>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      onClick={() =>
+                                        togglePackingbill(packingbill.id)
+                                      }
+                                      className={`flex items-center justify-between p-2 border-b border-gray-200 cursor-pointer ${
+                                        selectedPackingbills.includes(
+                                          packingbill.id
+                                        )
+                                          ? "bg-gray-100"
+                                          : "hover:bg-gray-50"
+                                      }`}
+                                    >
+                                      <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                          checked={selectedPackingbills.includes(
+                                            packingbill.id
                                           )}
+                                          onCheckedChange={() =>
+                                            togglePackingbill(packingbill.id)
+                                          }
+                                          onClick={(e) => e.stopPropagation()}
+                                        />
+                                        <span className="text-gray-500 text-sm">
+                                          {packingbill.company}
                                         </span>
-                                        ,{" "}
-                                        <span>
-                                          <strong>Cantidad:</strong>{" "}
-                                          {product?.stock}
-                                        </span>
-                                      </li>
-                                    ))
-                                  ) : (
-                                    <p>No hay productos asociados.</p>
-                                  )}
-                                </ul>
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        ))}
-                      </TooltipProvider>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                                      </div>
+                                      <span className="text-gray-500 text-sm">
+                                        {packingbill.packingbillNumber}
+                                      </span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="bg-white shadow-md">
+                                    <div className="text-sm text-gray-700">
+                                      <ul className="ml-4">
+                                        {Array.isArray(packingbill.products) ? (
+                                          (
+                                            packingbill.products as {
+                                              productId: string;
+                                              stock: number;
+                                            }[]
+                                          ).map((product, index) => (
+                                            <li key={index}>
+                                              <span>
+                                                {getProductName(
+                                                  products,
+                                                  product?.productId
+                                                )}
+                                              </span>
+                                              ,{" "}
+                                              <span>
+                                                <strong>Cantidad:</strong>{" "}
+                                                {product?.stock}
+                                              </span>
+                                            </li>
+                                          ))
+                                        ) : (
+                                          <p>No hay productos asociados.</p>
+                                        )}
+                                      </ul>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ))}
+                            </TooltipProvider>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
             <div className="pt-4">
               <h4 className="font-medium text-sm">Detalle de Productos</h4>
               <table className="w-full border-collapse border border-gray-200 mt-4 text-sm">
                 <thead>
-                  <tr className="bg-gray-100">
+                  <tr className="bg-[#B15147]/10 text-neutral-700">
                     <th className="border border-gray-200 px-4 py-1 w-[40%]">
                       Producto
                     </th>
@@ -350,7 +418,12 @@ const BillForm = ({ initialData }: BillFormProps) => {
                 <tbody>
                   {productsTable.length > 0 ? (
                     productsTable.map((product, index) => (
-                      <tr key={index}>
+                      <tr
+                        key={index}
+                        className={`border border-gray-200 ${
+                          index % 2 === 0 ? "bg-white" : "bg-zinc-50"
+                        }`}
+                      >
                         <td className="border border-gray-200 px-4 py-1">
                           {product.name}
                         </td>
@@ -390,10 +463,10 @@ const BillForm = ({ initialData }: BillFormProps) => {
                 </tbody>
               </table>
               {productsTable.length > 0 && (
-                <div className="mt-4 grid grid-cols-4 gap-y-2 justify-items-end">
+                <div className="mt-4 mr-4 grid grid-cols-4 gap-y-2 justify-items-end">
                   <div className="col-span-2"></div>
-                  <div className="font-medium">Subtotal:</div>
-                  <div>
+                  <div className="font-medium text-sm">Subtotal:</div>
+                  <div className="text-sm">
                     {formatNumber(
                       productsTable.reduce(
                         (acc, product) =>
@@ -403,8 +476,8 @@ const BillForm = ({ initialData }: BillFormProps) => {
                     )}
                   </div>
                   <div className="col-span-2"></div>
-                  <div className="font-medium">IVA (21%):</div>
-                  <div>
+                  <div className="font-medium text-sm">IVA (21%):</div>
+                  <div className="text-sm">
                     {formatNumber(
                       productsTable.reduce(
                         (acc, product) =>
@@ -440,6 +513,7 @@ const BillForm = ({ initialData }: BillFormProps) => {
                       className="block w-full h-24 p-2 border rounded-md resize-none border-gray-300 focus:ring focus:ring-primary/30"
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
