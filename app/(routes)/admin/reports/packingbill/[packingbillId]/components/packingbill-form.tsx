@@ -202,7 +202,16 @@ const PackingbillForm = ({ initialData }: PackingbillFormProps) => {
                       </h4>
                     </div>
                   ) : (
-                    <Button>Facturar Remito</Button>
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        router.push(
+                          `/admin/reports/bills/new?packingbillId=${initialData?.id}`
+                        )
+                      }
+                    >
+                      Facturar Remito
+                    </Button>
                   )}
                 </div>
               ) : (

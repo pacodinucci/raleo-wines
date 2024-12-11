@@ -4,15 +4,18 @@ import { Packingbill } from "@prisma/client";
 
 interface PackingbillStoreProps {
   packingbills: Packingbill[];
+  packingbill: Packingbill | null;
   isLoading: boolean;
   error: string | null;
   fetchPackingbills: () => Promise<void>;
   addPackingbill: (packingbill: Packingbill) => Promise<void>;
   removePackingbill: (id: string) => Promise<void>;
+  getPackingbillbyId: (id: string) => Promise<void>;
 }
 
 const usePackingbillStore = create<PackingbillStoreProps>((set) => ({
   packingbills: [],
+  packingbill: null,
   isLoading: false,
   error: null,
   fetchPackingbills: async () => {
@@ -60,6 +63,21 @@ const usePackingbillStore = create<PackingbillStoreProps>((set) => ({
     } catch (error) {
       console.error("Error removing packingbill:", error);
       set({ error: "Error al eliminar el remito." });
+    }
+  },
+
+  getPackingbillbyId: async (id: string) => {
+    try {
+      set({ isLoading: true, error: null });
+      const response = await axios.get(`/api/packingbill?packingbillId=${id}`);
+      const packingbill = response.data;
+
+      set({ packingbill, isLoading: false });
+      return packingbill;
+    } catch (error) {
+      console.error("Error getting bill: ", error);
+      set({ error: "Error obteniendo la factura" });
+      return null;
     }
   },
 }));

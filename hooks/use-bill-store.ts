@@ -85,7 +85,7 @@ const useBillStore = create<BillStoreProps>((set) => ({
   getBillById: async (id: string) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await axios.get(`/api/bill?billId=${id}`); // URL corregida
+      const response = await axios.get(`/api/bill?billId=${id}`);
       const bill = response.data;
 
       set({ bill, isLoading: false });

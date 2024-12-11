@@ -168,8 +168,28 @@ export async function PATCH(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const packingbillId = searchParams.get("packingbillId");
+
+    if (packingbillId) {
+      const packingbill = await db.packingbill.findUnique({
+        where: {
+          id: packingbillId,
+        },
+        include: {
+          bill: true,
+        },
+      });
+
+      if (!packingbill) {
+        return new NextResponse("Remito no encontrado.", { status: 404 });
+      }
+
+      return NextResponse.json(packingbill);
+    }
+
     const packingbills = await db.packingbill.findMany({
       include: {
         bill: true,

@@ -38,17 +38,14 @@ import { useRouter } from "next/navigation";
 
 interface BillFormProps {
   initialData: Bill | null;
+  defaultPackingbill: Packingbill | null;
 }
 
 export const productSchema = z.object({
-  // name: z.string().min(1, "El nombre del producto es obligatorio"),
   unitPrice: z
     .number()
     .min(0, "El precio del producto debe ser mayor o igual a 0"),
   quantity: z.number().int().min(1, "La cantidad debe ser al menos 1"),
-  // subtotal: z
-  //   .number()
-  //   .min(0, "El subtotal del producto debe ser mayor o igual a 0"),
   productId: z.string().min(1, "Id de producto es requerido."),
 });
 
@@ -73,13 +70,13 @@ export const formSchema = z.object({
   total: z.number().optional(),
 });
 
-const BillForm = ({ initialData }: BillFormProps) => {
+const BillForm = ({ initialData, defaultPackingbill }: BillFormProps) => {
   const router = useRouter();
   const [availablePackingbills, setAvailablePackingbills] = useState<
     Packingbill[]
   >([]);
   const [selectedPackingbills, setSelectedPackingbills] = useState<string[]>(
-    []
+    defaultPackingbill ? [defaultPackingbill.id] : []
   );
   const [productsTable, setProductsTable] = useState<
     { productId: string; name: string; quantity: number; price: number }[]
@@ -87,6 +84,8 @@ const BillForm = ({ initialData }: BillFormProps) => {
   const [remitoColors, setRemitoColors] = useState<{ [key: string]: string }>(
     {}
   );
+
+  console.log("DEFAULT PACKINGBILL --> ", defaultPackingbill);
 
   const { packingbills, fetchPackingbills } = usePackingbillStore();
   const { products, fetchProducts } = useProductStore();
@@ -130,6 +129,12 @@ const BillForm = ({ initialData }: BillFormProps) => {
   };
 
   useEffect(() => {
+    if (defaultPackingbill) {
+      updateProductsTable();
+    }
+  }, [defaultPackingbill, availablePackingbills]);
+
+  useEffect(() => {
     updateProductsTable();
   }, [selectedPackingbills]);
 
@@ -162,10 +167,8 @@ const BillForm = ({ initialData }: BillFormProps) => {
   useEffect(() => {
     const formattedProducts = productsTable.map((product) => ({
       productId: product.productId,
-      // name: product.name,
       unitPrice: product.price,
       quantity: product.quantity,
-      // subtotal: product.price * product.quantity,
     }));
 
     const subtotal = productsTable.reduce(
@@ -191,16 +194,6 @@ const BillForm = ({ initialData }: BillFormProps) => {
       console.error("Error en el formulario:", error);
     }
   };
-
-  // const togglePackingbill = (id: string) => {
-  //   setSelectedPackingbills((prev) =>
-  //     prev.includes(id) ? prev.filter((billId) => billId !== id) : [...prev, id]
-  //   );
-  // };
-
-  // const selectedPackingbillNumbers = availablePackingbills
-  //   .filter((packingbill) => selectedPackingbills.includes(packingbill.id))
-  //   .map((packingbill) => packingbill.packingbillNumber);
 
   const togglePackingbill = (id: string) => {
     setSelectedPackingbills((prev) => {
@@ -434,7 +427,7 @@ const BillForm = ({ initialData }: BillFormProps) => {
                           <Input
                             type="number"
                             value={product.price}
-                            className="appearance-none"
+                            className="appearance-none text-right"
                             onChange={(e) => {
                               const newPrice = parseFloat(e.target.value);
                               setProductsTable((prev) =>
