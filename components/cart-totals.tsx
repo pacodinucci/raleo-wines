@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { MoonLoader } from "react-spinners";
 
-// import getShipnowPrice from "@/app/actions/get-shipnow-price";
+import getShipnowPrice from "@/lib/get-shipnow-price";
 import useCartStore from "@/hooks/use-cart-store";
 import { montserrat, oswald } from "@/lib/fonts";
 import { calculateWeight } from "@/lib/helpers";
@@ -52,21 +52,13 @@ const CartTotals = () => {
     return subtotal + (shippingPrice || 0);
   };
 
-  // const calculateWeight = () => {
-  //   return cart.reduce((totalWeight, product) => {
-  //     const weight = Number(product.weight);
-  //     const quantity = product.quantity;
-
-  //     return totalWeight + weight * quantity;
-  //   }, 0);
-  // };
-
   const onShippingPriceClick = async () => {
     if (zipCode && zipCode.length >= 4) {
       setLoading(true);
       const weight = calculateWeight(cart);
-      //   const price = await getShipnowPrice(weight, Number(zipCode));
-      //   setShippingPrice(price);
+      console.log({ weight, zipCode: Number(zipCode) });
+      const price = await getShipnowPrice(weight, Number(zipCode));
+      setShippingPrice(price);
       setLoading(false);
     } else {
       console.log("Ingrese un código postal válido.");
@@ -105,32 +97,32 @@ const CartTotals = () => {
               )}
             </p>
           </div>
-          <AnimatePresence>
-            {showShippingForm && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, y: -30 }}
-                animate={{ opacity: 1, height: "auto", y: 0 }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.1 }}
-                className="overflow-hidden py-4"
-              >
-                <div className="flex items-center gap-2 justify-end">
-                  <Input
-                    type="text"
-                    placeholder="Ingrese C.P."
-                    className="border border-slate-300 px-4 py-2 w-40 rounded-none"
-                    onChange={(e) => setZipCode(e.target.value)}
-                  />
-                  <Button
-                    className={`${montserrat.className} bg-darkCustom hover:bg-darkCustom/90 rounded-none`}
-                    onClick={onShippingPriceClick}
-                  >
-                    Calcular
-                  </Button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* <AnimatePresence> */}
+          {showShippingForm && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: -30 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.1 }}
+              className="overflow-hidden py-4"
+            >
+              <div className="flex items-center gap-2 justify-end">
+                <Input
+                  type="text"
+                  placeholder="Ingrese C.P."
+                  className="border border-slate-300 px-4 py-2 w-40 rounded-none"
+                  onChange={(e) => setZipCode(e.target.value)}
+                />
+                <Button
+                  className={`${montserrat.className} bg-[#B15147] hover:bg-[#B15147]/90 rounded-none`}
+                  onClick={onShippingPriceClick}
+                >
+                  Calcular
+                </Button>
+              </div>
+            </motion.div>
+          )}
+          {/* </AnimatePresence> */}
         </div>
         <div className="py-4 flex justify-between">
           <p className="text-midBrownCustom font-medium">Total</p>
@@ -138,7 +130,7 @@ const CartTotals = () => {
         </div>
       </div>
       <Button
-        className={`${montserrat.className} bg-amber-800 hover:bg-amber-800/90 rounded-none`}
+        className={`${montserrat.className} bg-[#B15147] hover:bg-[#B15147]/90 rounded-none`}
         onClick={() => router.push("/shipping")}
       >
         Finalizar compra

@@ -86,9 +86,9 @@ const formSchema = z.object({
   stock: z.string().refine((val) => !isNaN(Number(val)), {
     message: "Stock debe ser un número.",
   }),
-  // external_reference: z.string().min(5, {
-  //   message: "External Reference es requerido.",
-  // }),
+  external_reference: z.string().min(5, {
+    message: "External Reference es requerido.",
+  }),
   available: z.boolean().default(true),
   boxSize: z.string(),
 });
@@ -121,8 +121,8 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
         discount: "0",
         weight: "",
         price: "",
-        stock: "0", // stock como string
-        // external_reference: "",
+        stock: "0",
+        external_reference: "",
         available: true,
         boxSize: "6",
       };
@@ -457,7 +457,7 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
                 )}
               />
             </div>
-            {/* <div className="py-4">
+            <div className="py-4">
               <FormField
                 name="external_reference"
                 control={form.control}
@@ -472,7 +472,7 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-            </div> */}
+            </div>
             <div className="py-4">
               <FormField
                 name="available"

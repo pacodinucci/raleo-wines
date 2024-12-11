@@ -3,6 +3,7 @@ import { MerchantOrder, Payment } from "mercadopago";
 import { mercadopagoPreference } from "@/lib/mercadopago-preference";
 import mercadopago from "mercadopago";
 import { db } from "@/lib/db";
+import postShipnowOrder from "@/lib/post-shipnow-order";
 
 export async function POST(request: Request) {
   try {
@@ -49,13 +50,19 @@ export async function POST(request: Request) {
             email: updatedOrder.email,
           },
           items: cart.map((item: any) => ({
-            //TODO: Agregar shipnowVariantId
-            // id: item.shipnowVariantId,
+            id: item.shipnowVariantId,
             quantity: item.quantity,
           })),
         };
 
-        // TODO: Implementación ShipNow
+        const shipnowResponse = await postShipnowOrder(orderData);
+
+        if (!shipnowResponse) {
+          console.error("Error al crear la orden en Shipnow");
+          return new NextResponse("Error al crear la orden en Shipnow.", {
+            status: 400,
+          });
+        }
 
         // Actualizar el stock de los productos
         await Promise.all(

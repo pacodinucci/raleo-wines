@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import axios from "axios";
 
 import useCartStore from "@/hooks/use-cart-store";
-// import getShipnowPrice from "@/app/actions/get-shipnow-price";
+import getShipnowPrice from "@/lib/get-shipnow-price";
 import { montserrat, oswald } from "@/lib/fonts";
 import { calculateWeight } from "@/lib/helpers";
 import { Separator } from "@/components/ui/separator";
@@ -32,8 +32,8 @@ const Summary = () => {
         const zipCode = shippingInfo.deliveryAddress
           ? shippingInfo.deliveryZipCode
           : shippingInfo.zipCode;
-        // const cost = await getShipnowPrice(weight, Number(zipCode));
-        // setShippingCost(cost);
+        const cost = await getShipnowPrice(weight, Number(zipCode));
+        setShippingCost(cost);
       } catch (error) {
         console.error("Error fetching shipping cost:", error);
       }
@@ -132,6 +132,17 @@ const Summary = () => {
       try {
         const validShippingCost = shippingCost ?? 0;
         const zipCode = shippingInfo.deliveryZipCode ?? "0000";
+
+        console.log({
+          productIds: cart.map((item) => item.id),
+          shippingCost: validShippingCost,
+          cart,
+          data: {
+            ...data,
+            zipCode,
+          },
+          anotherAddress: shippingInfo.deliveryAddress,
+        });
 
         const initPoint = await createPreference({
           productIds: cart.map((item) => item.id),

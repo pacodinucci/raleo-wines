@@ -81,7 +81,7 @@ const CartItems = (props: Props) => {
                 <div
                   className={`flex items-center ${
                     isShortScreen ? "ml-10" : "ml-4"
-                  } md:ml-0 py-2 px-3 md:py-1 md:px-2 border-2 border-amber-800 text-slate-400 h-9 md:h-7`}
+                  } md:ml-0 py-2 px-3 md:py-1 md:px-2 border-2 border-[#B15147] text-slate-400 h-9 md:h-7`}
                 >
                   <button
                     onClick={() => updateCartItem(item.id, item.quantity - 1)}
@@ -136,7 +136,7 @@ const CartItems = (props: Props) => {
           className="max-w-52 rounded-none"
           placeholder="Código del cupón"
         />
-        <Button className="rounded-none bg-amber-800 hover:bg-amber-800/90">
+        <Button className="rounded-none bg-[#B15147] hover:bg-[#B15147]/90">
           Aplicar el cupón
         </Button>
       </div>

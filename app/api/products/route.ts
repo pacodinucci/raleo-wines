@@ -1,5 +1,5 @@
-// import postShipnowVariant from "@/app/actions/post-shipnow-variant";
 import { db } from "@/lib/db";
+import postShipnowVariant from "@/lib/post-shipnow-variant";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       discount,
       price,
       stock,
-      // external_reference,
+      external_reference,
       available,
       boxSize,
       weight,
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       // !discount ||
       !price ||
       // !stock ||
-      // !external_reference ||
+      !external_reference ||
       !available ||
       !boxSize ||
       !weight
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
         discount,
         price,
         stock,
-        // external_reference,
+        external_reference,
         available,
         boxSize,
         weight,
@@ -90,42 +90,40 @@ export async function POST(req: Request) {
       },
     });
 
-    // const variantData = {
-    //   external_reference,
-    //   title,
-    //   price: {
-    //     retail: price * boxSize,
-    //     wholesale: null,
-    //     buy: null,
-    //   },
-    //   dimensions: {
-    //     weight,
-    //     height: 32,
-    //     length: 26,
-    //     width: 18,
-    //   },
-    // };
+    const variantData = {
+      external_reference,
+      title,
+      price: {
+        retail: price * boxSize,
+        wholesale: null,
+        buy: null,
+      },
+      dimensions: {
+        weight,
+        height: 32,
+        length: 26,
+        width: 18,
+      },
+    };
 
-    // console.log(variantData);
+    const productVariant = await postShipnowVariant(variantData);
 
-    // const productVariant = await postShipnowVariant(variantData);
+    if (!productVariant || !productVariant.id) {
+      return new NextResponse("Error cargando variante en Shipnow.", {
+        status: 400,
+      });
+    }
 
-    // if (!productVariant || !productVariant.id) {
-    //   return new NextResponse("Error cargando variante en Shipnow.", {
-    //     status: 400,
-    //   });
-    // }
+    const updatedProduct = await db.product.update({
+      where: {
+        id: product.id,
+      },
+      data: {
+        shipnowVariantId: productVariant.id,
+      },
+    });
 
-    // const updatedProduct = await db.product.update({
-    //   where: {
-    //     id: product.id,
-    //   },
-    //   data: {
-    //     shipnowVariantId: productVariant.id,
-    //   },
-    // });
-
-    return NextResponse.json(product);
+    return NextResponse.json(updatedProduct);
   } catch (error) {
     console.log("[PRODUCT_POST]", error);
     return new NextResponse("Internal error", { status: 500 });
