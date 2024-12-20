@@ -73,7 +73,7 @@ const ClubCarousel: React.FC = () => {
           {clubBoxes.map((item) => (
             <motion.div
               key={item.id}
-              layoutId={item.id} // LayoutId para la animación
+              layoutId={item.id}
               className={`${
                 montserrat.className
               } flex-shrink-0 w-80 flex justify-center items-center flex-col gap-y-4 py-12 ${
@@ -81,12 +81,11 @@ const ClubCarousel: React.FC = () => {
               }`}
               onClick={() => setExpandedBox(item.id)}
             >
-              {/* Imagen y texto */}
               <motion.div
                 className="relative w-60 h-60 overflow-hidden"
-                initial={{ borderRadius: "50%" }} // Forma inicial: redonda
-                whileHover={{ borderRadius: "10%", scale: 1.2 }} // Al hover: cuadrada
-                transition={{ duration: 0.4 }} // Duración de la animación
+                initial={{ borderRadius: "50%" }}
+                whileHover={{ borderRadius: "10%", scale: 1.2 }}
+                transition={{ duration: 0.4 }}
               >
                 <Image
                   src={item.src!}
@@ -95,11 +94,14 @@ const ClubCarousel: React.FC = () => {
                   objectFit="cover"
                   className="cursor-pointer"
                 />
+                <motion.div
+                  className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"
+                  whileHover={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <h2 className="text-white text-xl font-bold">{item.name}</h2>
+                </motion.div>
               </motion.div>
-              {/* <div className="flex flex-col items-center">
-                <h2>{item.name}</h2>
-                <h3>{formatNumber(item.price!)}</h3>
-              </div> */}
             </motion.div>
           ))}
         </div>
