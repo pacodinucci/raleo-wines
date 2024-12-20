@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useBoxStore from "@/hooks/use-box-store";
 
-const ClubPage = () => {
+const ClubPageContent = () => {
   const searchParams = useSearchParams();
-  const clubId = searchParams.get("clubId"); // Obtener el ID del club desde la URL
+  const clubId = searchParams.get("clubId");
 
-  const { fetchBoxById, selectedBox } = useBoxStore(); // Acceder a la acción y el estado de la Box
+  const { fetchBoxById, selectedBox } = useBoxStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const ClubPage = () => {
   if (!selectedBox) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <h1>No se encontro el club</h1>
+        <h1>No se encontró el club</h1>
       </div>
     );
   }
@@ -44,5 +44,17 @@ const ClubPage = () => {
     </div>
   );
 };
+
+const ClubPage = () => (
+  <Suspense
+    fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <h1>Cargando...</h1>
+      </div>
+    }
+  >
+    <ClubPageContent />
+  </Suspense>
+);
 
 export default ClubPage;
