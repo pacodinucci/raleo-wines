@@ -33,9 +33,9 @@ export default function Home() {
         <ClubCarousel />
         {/* <TiendaCarousel /> */}
       </div>
-      <div ref={subscriptionRef}>
+      {/* <div ref={subscriptionRef}>
         <SubscribeSection />
-      </div>
+      </div> */}
     </main>
   );
 }

@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import { montserrat } from "@/lib/fonts";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useRouter } from "next/navigation";
 import useBoxStore from "@/hooks/use-box-store";
 import { formatNumber } from "@/lib/utils";
+import { Button } from "./ui/button";
 
 const ClubCarousel: React.FC = () => {
   const router = useRouter();
@@ -16,6 +17,9 @@ const ClubCarousel: React.FC = () => {
   const { clubBoxes, fetchClubBoxes } = useBoxStore();
 
   const [expandedBox, setExpandedBox] = useState<string | null>(null);
+
+  const componentRef = useRef(null);
+  const inView = useInView(componentRef, { once: true });
 
   useEffect(() => {
     fetchClubBoxes();
@@ -43,7 +47,18 @@ const ClubCarousel: React.FC = () => {
   };
 
   return (
-    <div className="relative group hidden md:block">
+    <motion.div
+      className="relative group hidden md:block"
+      ref={componentRef}
+      initial={{ y: 100, opacity: 0 }}
+      animate={inView ? { y: 0, opacity: 1 } : {}}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <h1
+        className={`${montserrat.className} text-4xl font-semibold text-[#B15147] uppercase tracking-wide`}
+      >
+        Hay vino para todos
+      </h1>
       {/* Botón anterior */}
       <button
         onClick={handlePrev}
@@ -82,7 +97,7 @@ const ClubCarousel: React.FC = () => {
               onClick={() => setExpandedBox(item.id)}
             >
               <motion.div
-                className="relative w-60 h-60 overflow-hidden"
+                className="relative w-60 h-60 overflow-hidden cursor-pointer"
                 initial={{ borderRadius: "50%" }}
                 whileHover={{ borderRadius: "10%", scale: 1.2 }}
                 transition={{ duration: 0.4 }}
@@ -95,11 +110,12 @@ const ClubCarousel: React.FC = () => {
                   className="cursor-pointer"
                 />
                 <motion.div
-                  className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"
+                  className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 gap-6"
                   whileHover={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
                 >
                   <h2 className="text-white text-xl font-bold">{item.name}</h2>
+                  {/* <h2 className="text-white text-xl font-bold">+ INFO</h2> */}
                 </motion.div>
               </motion.div>
             </motion.div>
@@ -120,34 +136,40 @@ const ClubCarousel: React.FC = () => {
             />
             <motion.div
               layoutId={expandedBox}
-              className="fixed inset-10 bg-white z-50 p-5 rounded-lg shadow-lg flex flex-col items-center"
+              className="fixed min-h-96 inset-x-10 top-20 mx-auto max-w-md z-50 rounded-lg shadow-lg bg-cover bg-center"
+              style={{
+                backgroundImage: `url('${
+                  clubBoxes.find((box) => box.id === expandedBox)?.src || ""
+                }')`,
+              }}
             >
               <button
-                className="absolute top-2 right-2 text-gray-500"
+                className="absolute top-2 right-2 text-white bg-black/50 rounded-full p-2"
                 onClick={() => setExpandedBox(null)}
               >
-                Cerrar
+                <X />
               </button>
-              <Image
-                src={clubBoxes.find((box) => box.id === expandedBox)?.src || ""}
-                alt="Expanded Box"
-                width={400}
-                height={400}
-              />
-              <h2 className="mt-4 text-2xl font-bold">
-                {clubBoxes.find((box) => box.id === expandedBox)?.name}
-              </h2>
-              <p className="mt-2">
-                {formatNumber(
-                  clubBoxes.find((box) => box.id === expandedBox)?.price || 0
-                )}
-              </p>
-              <button
-                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={() => handleMoreInfo(expandedBox!)}
+
+              <div
+                className={`${montserrat.className} min-h-96 flex flex-col items-center justify-between bg-black/50 rounded-lg p-5`}
               >
-                Ver Más Información
-              </button>
+                <h2 className="text-3xl font-bold text-white">
+                  {clubBoxes.find((box) => box.id === expandedBox)?.name}
+                </h2>
+                {/* <p className="mt-4 text-white text-xl">
+                  {formatNumber(
+                    clubBoxes.find((box) => box.id === expandedBox)?.price || 0
+                  )}
+                </p> */}
+                <p className="mt-4 text-white text-lg text-center">
+                  Esta es una descripción de ejemplo.
+                </p>
+                <Button
+                  className={`${montserrat.className} uppercase bg-neutral-200 text-neutral-800 hover:bg-neutral-200/80`}
+                >
+                  Mas información
+                </Button>
+              </div>
             </motion.div>
           </>
         )}
@@ -167,7 +189,7 @@ const ClubCarousel: React.FC = () => {
       >
         <ChevronRight size={20} />
       </button>
-    </div>
+    </motion.div>
   );
 };
 
