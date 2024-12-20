@@ -36,27 +36,27 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const type = searchParams.get("type");
+// export async function GET(req: Request) {
+//   try {
+//     const { searchParams } = new URL(req.url);
+//     const type = searchParams.get("type");
 
-    // Validate and cast the type to BoxType if it matches
-    const validTypes = Object.values(BoxType); // Ensure BoxType is properly imported
-    const typeFilter = validTypes.includes(type as BoxType)
-      ? (type as BoxType)
-      : undefined;
+//     // Validate and cast the type to BoxType if it matches
+//     const validTypes = Object.values(BoxType); // Ensure BoxType is properly imported
+//     const typeFilter = validTypes.includes(type as BoxType)
+//       ? (type as BoxType)
+//       : undefined;
 
-    const boxes = await db.box.findMany({
-      where: typeFilter ? { type: typeFilter } : undefined,
-      include: {
-        products: true,
-      },
-    });
+//     const boxes = await db.box.findMany({
+//       where: typeFilter ? { type: typeFilter } : undefined,
+//       include: {
+//         products: true,
+//       },
+//     });
 
-    return NextResponse.json(boxes);
-  } catch (error) {
-    console.log("[BOXES_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-}
+//     return NextResponse.json(boxes);
+//   } catch (error) {
+//     console.log("[BOXES_GET]", error);
+//     return new NextResponse("Internal error", { status: 500 });
+//   }
+// }
