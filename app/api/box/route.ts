@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { BoxType } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -40,14 +41,14 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type");
 
-    if (!type) {
-      const boxes = await db.box.findMany();
-      return NextResponse.json(boxes);
-    }
+    // Validate and cast the type to BoxType if it matches
+    const validTypes = Object.values(BoxType); // Ensure BoxType is properly imported
+    const typeFilter = validTypes.includes(type as BoxType)
+      ? (type as BoxType)
+      : undefined;
 
     const boxes = await db.box.findMany({
-      //@ts-ignore
-      where: { type },
+      where: typeFilter ? { type: typeFilter } : undefined,
       include: {
         products: true,
       },
