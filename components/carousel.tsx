@@ -56,6 +56,7 @@ const TiendaCarousel: React.FC<TiendaCarouselProps> = () => {
       discount: product.discount,
       weight: product.weight,
       src: product.src,
+      shipnowVariantId: product.shipnowVariantId,
     };
 
     addToCart(cartProduct);

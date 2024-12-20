@@ -23,6 +23,7 @@ const CartTotals = () => {
   useEffect(() => {
     // Resetea el precio de envío a null cuando cambie el carrito
     setShippingPrice(null);
+    console.log(cart);
   }, [cart]);
 
   const formatNumber = (number: number): string => {

@@ -15,7 +15,7 @@ const TopNavigation = () => {
 
   const opacity = useTransform(
     scrollY,
-    pathname === "/" ? [2200, 2300] : [0, 0],
+    pathname === "/" ? [2500, 2600] : [0, 0],
     pathname === "/" ? [0, 1] : [1, 1]
   );
   const translateY = useTransform(
@@ -30,7 +30,7 @@ const TopNavigation = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 grid grid-cols-[40%_20%_40%] items-center px-6 py-4 z-50 w-full bg-white/50 backdrop-blur-md"
+      className="fixed top-0 left-0 grid grid-cols-[40%_20%_40%] items-center px-6 py-4 z-20 w-full bg-white/50 backdrop-blur-md"
       style={{
         opacity,
         transform: translateY,

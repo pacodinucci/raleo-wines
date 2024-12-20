@@ -76,10 +76,10 @@ model Product {
   external_reference String
   stock              Int         @default(0)
   year               String
-  // userId             String // Campo de clave foránea para la relación con User
-  // user               User    @relation(fields: [userId], references: [id])
   orderItems         OrderItem[]
   shipnowVariantId   Int?
+
+  boxes Box[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -174,6 +174,31 @@ model Bill {
   // packingbill       Packingbill @relation(fields: [packingbillNumber], references: [packingbillNumber])
   // packingbillNumber String      @unique
   packingbills Packingbill[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BoxType {
+  CLUB
+  COMBO
+  CLOSED
+}
+
+model Box {
+  id                 String    @id @default(uuid())
+  name               String
+  bottles            Int
+  type               BoxType
+  products           Product[]
+  isActive           Boolean
+  price              Int?
+  src                String?
+  clubType           String?
+  description        String?
+  shortDescription   String?
+  external_reference String?
+  shipnowVariantId   Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

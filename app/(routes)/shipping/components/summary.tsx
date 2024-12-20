@@ -118,6 +118,7 @@ const Summary = () => {
   // };
 
   const onSubmit = async (data: any) => {
+    console.log({ data, shippingInfo });
     if (
       shippingInfo.deliveryAddress &&
       (!shippingInfo.deliveryFullName ||
@@ -131,7 +132,7 @@ const Summary = () => {
     } else {
       try {
         const validShippingCost = shippingCost ?? 0;
-        const zipCode = shippingInfo.deliveryZipCode ?? "0000";
+        // const zipCode = shippingInfo.deliveryZipCode ?? "0000";
 
         console.log({
           productIds: cart.map((item) => item.id),
@@ -139,7 +140,7 @@ const Summary = () => {
           cart,
           data: {
             ...data,
-            zipCode,
+            // zipCode,
           },
           anotherAddress: shippingInfo.deliveryAddress,
         });
@@ -150,7 +151,7 @@ const Summary = () => {
           cart,
           data: {
             ...data,
-            zipCode,
+            // zipCode,
           },
           anotherAddress: shippingInfo.deliveryAddress,
         });

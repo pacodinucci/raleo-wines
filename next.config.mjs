@@ -12,6 +12,7 @@ const nextConfig = {
       "res.cloudinary.com",
       "res-console.cloudinary.com",
       "lh3.googleusercontent.com",
+      "cdn.pixabay.com",
     ],
   },
 };

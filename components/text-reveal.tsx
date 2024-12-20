@@ -5,7 +5,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/dist/ScrollTrigger";
 
 const TextReveal = () => {
-  const [lettersRef, setlettersRef] = useArrayRef<HTMLSpanElement>();
+  const [lettersRef, setLettersRef] = useArrayRef<HTMLSpanElement>();
 
   function useArrayRef<T>() {
     const lettersRef = useRef<T[]>([]);
@@ -20,8 +20,11 @@ const TextReveal = () => {
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const text =
-    "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eum molestiae deleniti doloribus ratione a! Dignissimos deleniti quo omnis.";
+  const paragraphs = [
+    "Bienvenido al encuentro que celebra tus sentidos.",
+    "Cada botella refleja tus preferencias, estilo, y transforma cada ocasión en una experiencia única.",
+    "Tu viaje empieza aquí.",
+  ];
 
   useEffect(() => {
     const reveal = gsap.to(lettersRef.current, {
@@ -42,24 +45,26 @@ const TextReveal = () => {
 
   return (
     <>
-      <div style={{ height: "30vh" }}></div>
-      <div className="" style={{ paddingLeft: "10%", paddingRight: "30%" }}>
+      <div style={{ height: "32vh" }}></div>
+      <div className="" style={{ paddingLeft: "10%", paddingRight: "20%" }}>
         <div ref={triggerRef}>
-          {text.split("").map((letter, index) => (
-            <span
-              key={index}
-              className=""
-              ref={setlettersRef}
-              style={{
-                fontSize: "clamp(3rem, 10vw, 15rem)",
-                lineHeight: "clamp(3rem, 10vw, 15rem)",
-                fontWeight: "800",
-                color: "#fff",
-                // filter: "drop-shadow(0 0 0.06rem rgb(33, 33, 33))",
-              }}
-            >
-              {letter}
-            </span>
+          {paragraphs.map((paragraph, pIndex) => (
+            <p key={pIndex} style={{ marginBottom: "2rem" }}>
+              {paragraph.split("").map((letter, index) => (
+                <span
+                  key={`${pIndex}-${index}`}
+                  ref={setLettersRef}
+                  style={{
+                    fontSize: "clamp(3rem, 9vw, 15rem)",
+                    lineHeight: "clamp(3rem, 10vw, 15rem)",
+                    fontWeight: "800",
+                    color: "#fff",
+                  }}
+                >
+                  {letter}
+                </span>
+              ))}
+            </p>
           ))}
         </div>
       </div>

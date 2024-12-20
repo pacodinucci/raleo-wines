@@ -6,6 +6,7 @@ export interface CartProduct {
   price: string;
   quantity: number;
   weight: string;
+  shipnowVariantId: number | null;
   [key: string]: any;
 }
 

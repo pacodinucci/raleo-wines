@@ -55,6 +55,8 @@ export async function POST(request: Request) {
           })),
         };
 
+        console.log(orderData);
+
         const shipnowResponse = await postShipnowOrder(orderData);
 
         if (!shipnowResponse) {

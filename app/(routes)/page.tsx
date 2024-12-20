@@ -10,14 +10,10 @@ import { oswald } from "@/lib/fonts";
 import { useInView } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { useSubscription } from "@/context/subscription-context";
+import ClubCarousel from "@/components/club-carousel";
+import useBoxStore from "@/hooks/use-box-store";
 
 export default function Home() {
-  // const products = await db.product.findMany({
-  //   where: {
-  //     available: true,
-  //   },
-  // });
-
   const subscriptionRef = useRef<HTMLDivElement | null>(null);
   const subscriptionInView = useInView(subscriptionRef, {
     amount: 0.9,
@@ -30,10 +26,12 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <TextReveal />
+      {/* <Logo /> */}
+      {/* <TextReveal /> */}
       <Landing />
       <div className="px-0 md:px-28 mt-28 pb-28">
-        <TiendaCarousel />
+        <ClubCarousel />
+        {/* <TiendaCarousel /> */}
       </div>
       <div ref={subscriptionRef}>
         <SubscribeSection />
