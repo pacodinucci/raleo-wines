@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import useBoxStore from "@/hooks/use-box-store";
 import { formatNumber } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 
 const ClubCarousel: React.FC = () => {
   const router = useRouter();
@@ -59,6 +60,12 @@ const ClubCarousel: React.FC = () => {
       >
         Hay vino para todos
       </h1>
+      <h3
+        className={`${montserrat.className} text-xl font-semibold text-[#B15147] tracking-wide`}
+      >
+        Aca va una breve descripción del club
+      </h3>
+      <Separator className="bg-[#B15147]" />
       {/* Botón anterior */}
       <button
         onClick={handlePrev}
@@ -99,7 +106,7 @@ const ClubCarousel: React.FC = () => {
               <motion.div
                 className="relative w-60 h-60 overflow-hidden cursor-pointer"
                 initial={{ borderRadius: "50%" }}
-                whileHover={{ borderRadius: "10%", scale: 1.2 }}
+                whileHover={{ borderRadius: "30%", scale: 1.05 }}
                 transition={{ duration: 0.4 }}
               >
                 <Image

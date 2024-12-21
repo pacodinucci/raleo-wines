@@ -15,6 +15,8 @@ import {
   ChevronRight,
   Clipboard,
   ClipboardList,
+  Wine,
+  Box,
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -24,6 +26,7 @@ export const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [isReportsOpen, setIsReportsOpen] = useState(false);
+  const [isProductsOpen, setIsProductsOpen] = useState(false); // Estado para Productos
 
   const routes = [
     {
@@ -40,9 +43,21 @@ export const Sidebar = () => {
     },
     {
       icon: ShoppingBag,
-      href: "/admin/products",
-      label: "Productos",
+      href: null,
+      label: "Productos", // Ahora es un menú desplegable
       pro: true,
+      submenu: [
+        {
+          href: "/admin/products",
+          label: "Vinos",
+          icon: Wine,
+        },
+        {
+          href: "/admin/boxes",
+          label: "Cajas",
+          icon: Box,
+        },
+      ],
     },
     {
       icon: Package,
@@ -84,8 +99,9 @@ export const Sidebar = () => {
 
   const onNavigate = (url: string, pro: boolean) => {
     // TODO: Check if pro
-
-    return router.push(url);
+    if (url) {
+      return router.push(url);
+    }
   };
 
   return (
@@ -109,7 +125,9 @@ export const Sidebar = () => {
                 )}
                 onClick={() =>
                   route.submenu
-                    ? setIsReportsOpen((prev) => !prev)
+                    ? route.label === "Reportes"
+                      ? setIsReportsOpen((prev) => !prev)
+                      : setIsProductsOpen((prev) => !prev)
                     : onNavigate(route.href, route.pro)
                 }
               >
@@ -119,8 +137,26 @@ export const Sidebar = () => {
                 </div>
                 {route.submenu && (
                   <motion.div
-                    initial={{ rotate: isReportsOpen ? 0 : 90 }}
-                    animate={{ rotate: isReportsOpen ? 90 : 0 }}
+                    initial={{
+                      rotate:
+                        route.label === "Reportes"
+                          ? isReportsOpen
+                            ? 0
+                            : 90
+                          : isProductsOpen
+                          ? 0
+                          : 90,
+                    }}
+                    animate={{
+                      rotate:
+                        route.label === "Reportes"
+                          ? isReportsOpen
+                            ? 90
+                            : 0
+                          : isProductsOpen
+                          ? 90
+                          : 0,
+                    }}
                     transition={{ duration: 0.2 }}
                   >
                     <ChevronRight className="h-4 w-4" />
@@ -128,31 +164,33 @@ export const Sidebar = () => {
                 )}
               </div>
 
-              {/* Submenu para Reportes */}
+              {/* Submenu para Reportes y Productos */}
               <AnimatePresence>
-                {route.submenu && isReportsOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                  >
-                    {route.submenu.map((submenu) => (
-                      <div
-                        key={submenu.href}
-                        className={cn(
-                          "text-muted-foreground w-full text-xs group flex mx-5 p-3 pl-8 justify-start font-medium cursor-pointer bg-white/20 border-l border-neutral-300 hover:text-white hover:bg-primary/10 transition",
-                          pathname === submenu.href &&
-                            "bg-primary/10 text-white"
-                        )}
-                        onClick={() => onNavigate(submenu.href, route.pro)}
-                      >
-                        <submenu.icon className="h-4 w-4 mr-2" />
-                        {submenu.label}
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
+                {route.submenu &&
+                  ((route.label === "Reportes" && isReportsOpen) ||
+                    (route.label === "Productos" && isProductsOpen)) && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      {route.submenu.map((submenu) => (
+                        <div
+                          key={submenu.href}
+                          className={cn(
+                            "text-muted-foreground w-full text-xs group flex mx-5 p-3 pl-8 justify-start font-medium cursor-pointer bg-white/20 border-l border-neutral-300 hover:text-white hover:bg-primary/10 transition",
+                            pathname === submenu.href &&
+                              "bg-primary/10 text-white"
+                          )}
+                          onClick={() => onNavigate(submenu.href, route.pro)}
+                        >
+                          <submenu.icon className="h-4 w-4 mr-2" />
+                          {submenu.label}
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
               </AnimatePresence>
             </div>
           ))}
